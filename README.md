@@ -1,5 +1,5 @@
-# slate_runner🎬🐍
-RESTful API for the visual effects world.
+# slate_runner 🎬🐍
+RESTful API for fixing it in post.
 
 #### Run service:
 ```bash

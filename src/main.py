@@ -1,4 +1,5 @@
 ﻿import os
+import uvicorn
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from fastapi import FastAPI
@@ -24,12 +25,22 @@ def create_app() -> FastAPI:
     )
 
     # Root endpoint
-    @api.get("/", tags=["root"])
+    from fastapi.responses import HTMLResponse
+    @api.get("/", response_class=HTMLResponse, tags=["root"])
     def root():
-        return {
-            "name": "slate_runner_api",
-            "message": "Welcome. See /api/ for status.",
-        }
+        return """
+        <html>
+          <head>
+            <link rel="icon" href="/favicon.ico" type="image/x-icon">
+            <title>slate_runner</title>
+          </head>
+          <body style="font-family: ui-sans-serif, system-ui">
+            <h1>slate_runner</h1>
+            <p><strong>RESTful API for fixing it in post.</strong></p>
+            <p>See <a href="/api/">/api/</a> for status or <a href="/docs">/docs</a> for OpenAPI.</p>
+          </body>
+        </html>
+        """
 
     # Favicon route
     @api.get("/favicon.ico", include_in_schema=False)
@@ -46,3 +57,6 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8049, reload=True)

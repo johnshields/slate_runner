@@ -13,5 +13,5 @@ def status_payload(app: FastAPI) -> dict:
         "version": app.version if hasattr(app, "version") else "0.0.1",
         "timestamp": now.isoformat(),
         "uptime_seconds": int(uptime_seconds),
-        "message": "slate_runner_api is live...",
+        "message": "RESTful API for fixing it in post.",
     }
