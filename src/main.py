@@ -21,7 +21,7 @@ def create_app() -> FastAPI:
     api = FastAPI(
         title="slate_runner_api",
         version="0.0.1",
-        description="RESTful API for the visual effects world.",
+        description="RESTful API for fixing it in post.",
         lifespan=lifespan,
     )
 
