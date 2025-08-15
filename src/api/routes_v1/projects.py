@@ -1,21 +1,12 @@
-﻿from fastapi import APIRouter, Request, Query, Depends
+﻿from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import Optional
-from api.service import status_payload
 from db.db import get_db
 from models.models import Project
 from models.schemas import ProjectOut
 
 router = APIRouter()
-
-
-@router.get("/", summary="API status / load balancer check")
-def api_root(request: Request):
-    """
-    Lightweight health endpoint for LBs / uptime checks.
-    """
-    return status_payload(request.app)
 
 
 @router.get("/projects", response_model=list[ProjectOut])
