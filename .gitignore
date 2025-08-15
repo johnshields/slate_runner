@@ -1,14 +1,14 @@
-# macOS
+# Project
+works/
+/src/db/db_seed.py
+
+# OS
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# Windows
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
-# Linux
 *~
 
 # Python
@@ -89,5 +89,3 @@ docker-compose.override.yml
 # Miscellaneous
 *.bak
 *.old
-works/
-

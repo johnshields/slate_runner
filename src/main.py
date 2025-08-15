@@ -11,7 +11,7 @@ from api.routes import router as api_router
 @asynccontextmanager
 async def lifespan(api: FastAPI):
     api.state.started_at = datetime.now(timezone.utc)
-    app.state.settings = settings
+    api.state.settings = settings
     print("[info]: slate_runner_api booting up...")
     yield
     print("[info]: slate_runner_api shutting down...")
@@ -54,7 +54,7 @@ def create_app() -> FastAPI:
 
     # Include API routes
     api.include_router(api_router, prefix="/api", tags=["api"])
-    app.include_router(api_router, prefix="/api/v1", tags=["v1"])
+    api.include_router(api_router, prefix="/api/v1", tags=["v1"])
     return api
 
 
