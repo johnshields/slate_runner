@@ -7,7 +7,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 from config import settings
-from api.system import router as system_router
+from api import router as api_router
 from api.routes_v1 import router as v1_router
 from db.db import engine
 
@@ -69,8 +69,8 @@ def create_app() -> FastAPI:
     api.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
     # Include API routes
-    api.include_router(system_router, prefix="/api")
-    api.include_router(v1_router, prefix="/api/v1", tags=["api/v1/"])
+    api.include_router(api_router, prefix="/api")
+    api.include_router(v1_router, prefix="/api/v1")
     return api
 
 
