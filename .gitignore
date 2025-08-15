@@ -1,6 +1,6 @@
 # Project
 works/
-/src/db/db_seed.py
+src/db/db_seed.py
 
 # OS
 .DS_Store
