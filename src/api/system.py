@@ -10,7 +10,12 @@ def api_root(request: Request):
     return status_payload(request.app)
 
 
+@router.get("/healthz", summary="Liveness")
+def healthz():
+    return {"ok": True}
+
+
 @router.get("/readyz", summary="Readiness (DB ping)")
 def readyz():
-    """Check DB connection."""
+    """Check DB readiness."""
     return db_conn()
