@@ -4,8 +4,10 @@ from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 from config import settings
 from api.routes import router as api_router
+from db.db import engine
 
 
 @asynccontextmanager
@@ -13,10 +15,23 @@ async def lifespan(api: FastAPI):
     api.state.started_at = datetime.now(timezone.utc)
     api.state.settings = settings
     print("[info]: slate_runner_api booting up...")
-    yield
-    print("[info]: slate_runner_api shutting down...")
+
+    try:
+        with engine.connect() as conn:
+            ts = conn.execute(text("select now()")).scalar_one()
+            print(f"[info]: database ready @ {ts.isoformat()}")
+    except Exception as e:
+        print(f"[error]: database connection failed on startup: {e}")
+        raise
+
+    try:
+        yield
+    finally:
+        engine.dispose()
+        print("[info]: slate_runner_api shutting down...")
 
 
+# Init FastAPI
 def create_app() -> FastAPI:
     api = FastAPI(
         title="slate_runner_api",
@@ -53,8 +68,7 @@ def create_app() -> FastAPI:
     api.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
 
     # Include API routes
-    api.include_router(api_router, prefix="/api", tags=["api"])
-    api.include_router(api_router, prefix="/api/v1", tags=["v1"])
+    api.include_router(api_router, prefix="/api/v1", tags=["api/v1/"])
     return api
 
 

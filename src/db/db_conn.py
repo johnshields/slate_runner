@@ -1,7 +1,7 @@
 ﻿#!/usr/bin/env python
 from sqlalchemy import text
-from db import engine
 from config import settings
+from db import engine
 
 
 def main() -> int:
