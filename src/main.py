@@ -2,6 +2,7 @@
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -40,6 +41,14 @@ def create_app() -> FastAPI:
         version="0.0.1",
         description="RESTful API for fixing it in post.",
         lifespan=lifespan,
+    )
+
+    api.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     # Root endpoint
