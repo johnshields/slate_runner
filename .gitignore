@@ -19,6 +19,8 @@ __pycache__/
 *.pyc
 *.pyd
 .Python
+alembic.ini
+.env
 env/
 venv/
 ENV/
@@ -70,24 +72,22 @@ htmlcov/
 *.tmp
 *.swp
 
-# Docker
-.dockerignore
-docker-compose.override.yml
-*~ 
-
-# VS Code
-.vscode/
-
-# JetBrains
-.idea/
-*.iml
-
 # Test artifacts
 test-results/
 reports/
 
+# Docker
+.dockerignore
+docker-compose.override.yml
+*~
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
 # Miscellaneous
 *.bak
 *.old
-works/notes.txt
-.env
+works/
+

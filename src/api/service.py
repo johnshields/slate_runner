@@ -11,6 +11,7 @@ def status_payload(app: FastAPI) -> dict:
         "ok": True,
         "service": "slate_runner_api",
         "version": app.version if hasattr(app, "version") else "0.0.1",
+        "api_version": "v1",
         "timestamp": now.isoformat(),
         "uptime_seconds": int(uptime_seconds),
         "message": "RESTful API for fixing it in post.",
