@@ -1,16 +1,17 @@
 ﻿import os
-import uvicorn
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from config import settings
 from api.routes import router as api_router
 
 
 @asynccontextmanager
 async def lifespan(api: FastAPI):
     api.state.started_at = datetime.now(timezone.utc)
+    app.state.settings = settings
     print("[info]: slate_runner_api booting up...")
     yield
     print("[info]: slate_runner_api shutting down...")
@@ -57,6 +58,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8049, reload=True)
