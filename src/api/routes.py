@@ -1,5 +1,5 @@
 ﻿from fastapi import APIRouter, Request
-from .service import status_payload
+from api.service import status_payload
 
 router = APIRouter()
 

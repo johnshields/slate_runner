@@ -1,11 +1,7 @@
 ﻿#!/usr/bin/env python
-import sys, os
 from sqlalchemy import text
-from src.db.db import engine
-from src.config import settings
-
-SRC_DIR = os.path.join(os.path.dirname(__file__), os.pardir, "src")
-sys.path.insert(0, os.path.abspath(SRC_DIR))
+from db import engine
+from config import settings
 
 
 def main() -> int:
