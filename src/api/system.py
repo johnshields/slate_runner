@@ -6,16 +6,17 @@ router = APIRouter()
 
 @router.get("/", summary="API status / load balancer check")
 def api_root(request: Request):
-    """Lightweight health endpoint for LBs / uptime checks."""
+    """Endpoint for LBs / uptime checks."""
     return status_payload(request.app)
 
 
 @router.get("/healthz", summary="Liveness")
 def healthz():
+    """Health endpoint."""
     return {"ok": True}
 
 
-@router.get("/readyz", summary="Readiness (DB ping)")
+@router.get("/readyz", summary="Readiness")
 def readyz():
     """Check DB readiness."""
     return db_conn()

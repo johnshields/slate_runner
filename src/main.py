@@ -19,6 +19,7 @@ async def lifespan(api: FastAPI):
     api.state.settings = settings
     print("[info]: slate_runner_api booting up...")
 
+    # Get DB connection up and ready.
     try:
         with engine.connect() as conn:
             ts = conn.execute(text("select now()")).scalar_one()

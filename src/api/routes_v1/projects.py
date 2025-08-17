@@ -16,6 +16,8 @@ def list_projects(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
+    """Returns a list of Projects"""
+
     stmt = select(Project)
     if name:
         stmt = stmt.where(Project.name == name)
