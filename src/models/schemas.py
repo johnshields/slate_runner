@@ -4,14 +4,14 @@ from typing import Optional
 
 class ProjectOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: int
+    uid: str
     name: str
 
 
 class ShotOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: int
-    project_id: int
+    uid: str
+    project_id: str
     seq: str
     shot: str
     frame_in: int
@@ -22,9 +22,9 @@ class ShotOut(BaseModel):
 
 class TaskOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: int
+    uid: str
     parent_type: str
-    parent_id: int
+    parent_id: str
     name: str
     assignee: Optional[str] = None
     status: str
@@ -32,8 +32,8 @@ class TaskOut(BaseModel):
 
 class VersionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: int
-    task_id: int
+    uid: str
+    task_id: str
     vnum: int
     status: str
     created_by: Optional[str] = None
@@ -42,8 +42,8 @@ class VersionOut(BaseModel):
 
 class PublishOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    id: int
-    version_id: int
+    uid: str
+    version_id: str
     type: str
     representation: Optional[str] = None
     path: str
