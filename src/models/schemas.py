@@ -3,6 +3,14 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 
+# Project schemas
+class ProjectOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: str
+    name: str
+    created_at: datetime
+
+
 class ProjectCreate(BaseModel):
     uid: Optional[str] = None
     name: str
@@ -10,13 +18,6 @@ class ProjectCreate(BaseModel):
 
 class ProjectUpdate(BaseModel):
     name: Optional[str] = None
-
-
-class ProjectOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    uid: str
-    name: str
-    created_at: datetime
 
 
 class ProjectCounts(BaseModel):
@@ -31,6 +32,7 @@ class ProjectOverviewOut(BaseModel):
     created_at: datetime
 
 
+# Asset schemas
 class AssetOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
@@ -40,6 +42,14 @@ class AssetOut(BaseModel):
     created_at: datetime
 
 
+class AssetCreate(BaseModel):
+    uid: Optional[str] = None
+    project_uid: str
+    name: str
+    type: Optional[str] = None
+
+
+# Shot schemas
 class ShotOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
@@ -53,6 +63,7 @@ class ShotOut(BaseModel):
     created_at: datetime
 
 
+# Task schemas
 class TaskOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
@@ -65,6 +76,7 @@ class TaskOut(BaseModel):
     created_at: datetime
 
 
+# Publish schemas
 class PublishOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
@@ -77,6 +89,7 @@ class PublishOut(BaseModel):
     created_at: datetime
 
 
+# Version schemas
 class VersionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str

@@ -91,4 +91,3 @@ INSERT INTO publishes (uid, project_id, version_id, type, representation, path, 
   ('PUB_GRN001', 'PROJ_GR33NK', 'VER_GRN001', 'prep',  'exr', '/shots/greenknight/shot100/v001/prep.exr', '{}'::jsonb, random_time(30)),
   ('PUB_OPP001', 'PROJ_OPP3NH', 'VER_OPP001', 'fx',    'mov', '/shots/oppenheimer/shot090/v001/explosion.mov', '{}'::jsonb, random_time(30)),
   ('PUB_NEY001', 'PROJ_AV4TAR', 'VER_NEY001', 'tex',   'png', '/assets/avatar/neytiri/v001/skin_diff.png', '{}'::jsonb, random_time(30));
-

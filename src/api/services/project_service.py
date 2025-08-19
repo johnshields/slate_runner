@@ -7,14 +7,18 @@ from models.schemas import ProjectOverviewOut, ProjectCreate, ProjectOut, Projec
 import utils.utils as utils
 
 
-# Create a new project, generate a UID if not provided.
+# Create a new project, generate a UID if not provided
 def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
+    # Check if a project with the same name already exists
+    if db.scalar(select(Project).where(Project.name == data.name)):
+        raise HTTPException(
+            status_code=409,
+            detail=f"Project '{data.name}' already exists."
+        )
+
+    # Create and persist project
     uid = data.uid or utils.generate_uid("PROJ")
-
-    # Create new project instance
     new_project = Project(uid=uid, name=data.name)
-
-    # Add to session and commit to DB
     db.add(new_project)
     db.commit()
     db.refresh(new_project)

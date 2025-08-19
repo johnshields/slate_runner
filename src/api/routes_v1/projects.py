@@ -44,7 +44,7 @@ def get_projects(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Projects by ID or name"""
+    """List or search Projects by UID or name"""
     return service.list_projects(db, uid=uid, name=name, limit=limit, offset=offset)
 
 
@@ -53,7 +53,7 @@ def project_overview(
         project_uid: str,
         db: Session = Depends(get_db)
 ):
-    """List Project overview by ID"""
+    """List Project overview by UID"""
     return service.list_project_overview(db, project_uid)
 
 
