@@ -44,13 +44,11 @@ class Task(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     parent_type: Mapped[str] = mapped_column(String, nullable=False)
-    parent_id: Mapped[str] = mapped_column(String, nullable=False)  # now a UID
+    parent_id: Mapped[str] = mapped_column(String, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     assignee: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False, default="WIP")
-    __table_args__ = (
-        CheckConstraint("parent_type IN ('asset','shot')", name="ck_task_parent_type"),
-    )
+    __table_args__ = (CheckConstraint("parent_type IN ('asset','shot')", name="ck_task_parent_type"),)
 
 
 class Version(Base):

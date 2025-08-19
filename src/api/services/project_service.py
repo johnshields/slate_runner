@@ -51,3 +51,21 @@ def get_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
 def get_assets_by_project(db: Session, project_uid: str):
     stmt = select(Asset).where(Asset.project_id == project_uid).order_by(Asset.name.asc())
     return db.execute(stmt).scalars().all()
+
+
+def get_project_shots(db: Session, project_uid: str, seq: str = None, shot: str = None, range: str = None):
+    stmt = select(Shot).where(Shot.project_id == project_uid)
+
+    if seq:
+        stmt = stmt.where(Shot.seq == seq)
+    if shot:
+        stmt = stmt.where(Shot.shot == shot)
+    if range:
+        try:
+            start, end = map(int, range.split("-"))
+            stmt = stmt.where(Shot.frame_in >= start, Shot.frame_out <= end)
+        except ValueError:
+            raise ValueError("Invalid range format. Use start-end (e.g. 100-200).")
+
+    stmt = stmt.order_by(Shot.seq.asc(), Shot.shot.asc())
+    return db.execute(stmt).scalars().all()
