@@ -1,25 +1,24 @@
 ﻿from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from models.models import Project, Shot, Task
+from typing import Optional
 
 
-def get_project_by_id(db: Session, project_id: str):
-    return db.scalar(select(Project).where(Project.uid == project_id))
+def get_projects(
+        db: Session,
+        uid: Optional[str] = None,
+        name: Optional[str] = None,
+        limit: int = 100,
+        offset: int = 0,
+):
+    stmt = select(Project)
 
+    if uid:
+        stmt = stmt.where(Project.uid == uid)
 
-def get_shot_and_task_counts(db: Session, project_id: str):
-    shots_count = db.scalar(
-        select(func.count()).select_from(Shot).where(Shot.project_id == project_id)
-    )
+    if name:
+        stmt = stmt.where(Project.name.ilike(f"%{name}%"))
 
-    tasks_count = db.scalar(
-        select(func.count()).select_from(Task)
-        .join(Shot, Task.parent_id == Shot.uid)
-        .where(Task.parent_type == "shot", Shot.project_id == project_id)
-    )
+    stmt = stmt.order_by(Project.name.asc()).limit(limit).offset(offset)
 
-    return shots_count, tasks_count
-
-
-def get_latest_comp_movs(db: Session, project_id: str) -> list[dict]:
-    return []
+    return db.execute(stmt).scalars().all()
