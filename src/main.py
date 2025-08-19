@@ -65,6 +65,7 @@ def create_app() -> FastAPI:
             <h1>slate_runner</h1>
             <p><strong>RESTful API for fixing it in post.</strong></p>
             <p>See <a href="/api/">/api/</a> for status or <a href="/docs">/docs</a> for OpenAPI.</p>
+            <p>See <a href="https://kntn.ly/a573c361" target="_blank">GitHub Repo</a></p>
           </body>
         </html>
         """

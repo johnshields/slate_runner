@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from models.models import Project, Asset, Shot, Task, Publish
 from typing import Optional
-from models.schemas import ProjectOverviewOut, ProjectCreate, ProjectOut
+from models.schemas import ProjectOverviewOut, ProjectCreate, ProjectOut, ProjectUpdate
 import utils.utils as utils
 
 
@@ -20,6 +20,35 @@ def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
     db.refresh(new_project)
 
     return new_project
+
+
+# Update a project by UID or name
+def update_project(db: Session, identifier: str, data: ProjectUpdate) -> ProjectOut:
+    stmt = select(Project).where((Project.uid == identifier) | (Project.name == identifier))
+    project = db.scalar(stmt)
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    if data.name:
+        project.name = data.name
+
+    db.commit()
+    db.refresh(project)
+    return project
+
+
+# Delete a project by UID or name
+def delete_project(db: Session, identifier: str) -> dict:
+    stmt = select(Project).where((Project.uid == identifier) | (Project.name == identifier))
+    project = db.scalar(stmt)
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    db.delete(project)
+    db.commit()
+    return {"detail": f"Project '{identifier}' deleted successfully"}
 
 
 # Get a list of all projects, with optional filtering by UID or name
