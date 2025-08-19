@@ -41,13 +41,12 @@ jobs:
 
       - name: Start FastAPI with Uvicorn in background
         run: |
-            source .venv/bin/activate
-            cd src
-            python -m uvicorn main:app --host 127.0.0.1 --port 8000 --log-level info > ../uvicorn.log 2>&1 &
-            echo $! > ../uvicorn.pid
-            cd ..
-            sleep 5
-            cat uvicorn.log
+          source .venv/bin/activate
+          export PYTHONPATH=src
+          python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8000 --log-level info > uvicorn.log 2>&1 &
+          echo $! > uvicorn.pid
+          sleep 5
+          cat uvicorn.log
 
       - name: Health check API
         run: |
