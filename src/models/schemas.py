@@ -44,6 +44,7 @@ class ShotOut(BaseModel):
 class TaskOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
+    project_id: str
     parent_type: str
     parent_id: str
     name: str

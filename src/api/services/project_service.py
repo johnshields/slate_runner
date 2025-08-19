@@ -35,10 +35,9 @@ def list_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
     shots_count = db.scalar(select(func.count()).select_from(Shot).where(Shot.project_id == project_uid))
 
     tasks_count = db.scalar(
-        select(func.count())
-        .select_from(Task)
-        .join(Shot, Task.parent_id == Shot.uid)
-        .where(Task.parent_type == "shot", Shot.project_id == project_uid)
+        select(func.count()).select_from(Task).where(
+            Task.project_id == project_uid, Task.parent_type == "shot"
+        )
     )
 
     return ProjectOverviewOut(
@@ -86,31 +85,14 @@ def list_project_tasks(
         parent_type: Optional[str] = None,
         status: Optional[str] = None,
 ):
-    stmt = select(Task)
+    stmt = select(Task).where(Task.project_id == project_uid)
 
-    # Filter by parent_type if provided
     if parent_type:
         stmt = stmt.where(Task.parent_type == parent_type)
 
-    # Filter by status if provided
     if status:
         stmt = stmt.where(Task.status == status)
 
-    # Join to filter by project
-    if parent_type == "asset":
-        stmt = stmt.join(Asset, Task.parent_id == Asset.uid).where(Asset.project_id == project_uid)
-    elif parent_type == "shot":
-        stmt = stmt.join(Shot, Task.parent_id == Shot.uid).where(Shot.project_id == project_uid)
-    else:
-        # Join both if no parent_type is specified
-        stmt = stmt.where(
-            ((Task.parent_type == "asset") & Task.parent_id.in_(
-                select(Asset.uid).where(Asset.project_id == project_uid)
-            )) |
-            ((Task.parent_type == "shot") & Task.parent_id.in_(
-                select(Shot.uid).where(Shot.project_id == project_uid)
-            ))
-        )
     return db.execute(stmt).scalars().all()
 
 

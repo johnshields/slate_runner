@@ -43,6 +43,7 @@ class Task(Base):
     __tablename__ = "tasks"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.uid", ondelete="CASCADE"), nullable=False)
     parent_type: Mapped[str] = mapped_column(String, nullable=False)
     parent_id: Mapped[str] = mapped_column(String, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
