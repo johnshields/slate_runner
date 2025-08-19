@@ -40,15 +40,16 @@ jobs:
           flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Start FastAPI with Uvicorn in background
-        run: |
-          source .venv/bin/activate
-          python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8000 --log-level info &
-          echo $! > uvicorn.pid
-          sleep 5
+      - run: |
+      - source .venv/bin/activate
+      - python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8000 --log-level info > uvicorn.log 2>&1 &
+      - echo $! > uvicorn.pid
+      - sleep 5
+      - cat uvicorn.log
 
       - name: Health check API
         run: |
-          curl -f http://127.0.0.1:8000 || (echo "API did not start or is unreachable" && exit 1)
+          curl -f http://127.0.0.1:8000/api/healthz || (echo "API did not start or is unreachable" && exit 1)
 
       - name: Run tests
         run: |
