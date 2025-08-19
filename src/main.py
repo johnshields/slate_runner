@@ -26,7 +26,8 @@ async def lifespan(api: FastAPI):
             print(f"[info]: database ready @ {ts.isoformat()}")
     except Exception as e:
         print(f"[error]: database connection failed on startup: {e}")
-        pass
+        if os.getenv("CI") != "true":
+            raise
 
     try:
         yield
