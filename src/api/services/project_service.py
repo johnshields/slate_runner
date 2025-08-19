@@ -89,7 +89,8 @@ def list_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
     return ProjectOverviewOut(
         uid=project.uid,
         name=project.name,
-        counts={"shots": shots_count, "tasks": tasks_count}
+        counts={"shots": shots_count, "tasks": tasks_count},
+        created_at=project.created_at
     )
 
 

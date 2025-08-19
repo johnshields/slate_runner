@@ -6,6 +6,14 @@
 -- Clear existing data
 TRUNCATE publishes, versions, tasks, shots, assets, projects RESTART IDENTITY CASCADE;
 
+-- Helper: generate a random timestamp within the past N days
+CREATE OR REPLACE FUNCTION random_time(days INT DEFAULT 30)
+RETURNS TIMESTAMPTZ AS $$
+BEGIN
+  RETURN now() - (random() * (days || ' days')::interval);
+END;
+$$ LANGUAGE plpgsql;
+
 -- Projects
 INSERT INTO projects (uid, name) VALUES
   ('PROJ_AL13N5', 'Alien'),
@@ -24,7 +32,7 @@ INSERT INTO assets (uid, project_id, name, type) VALUES
   ('ASSET_HEPTA1', 'PROJ_ARR1VL', 'HeptapodShip',     'Vehicle'),
   ('ASSET_KSP1NN', 'PROJ_BL4DER', 'KSpinner',         'Vehicle'),
   ('ASSET_X3N0MO', 'PROJ_AL13N5', 'Xenomorph',        'Creature'),
-  ('ASSET_ENDUR1', 'PROJ_1NTER5', 'EnduranceShip',    'Vehicle'),
+  ('ASSET_T4RS1X', 'PROJ_1NTER5', 'TARS',             'Character'),
   ('ASSET_NEYT1R', 'PROJ_AV4TAR', 'Neytiri',          'Character'),
   ('ASSET_NUKEFX', 'PROJ_OPP3NH', 'NuclearBombFX',    'Effect'),
   ('ASSET_GRNKT1', 'PROJ_GR33NK', 'GreenKnight',      'Character'),
@@ -60,27 +68,27 @@ INSERT INTO tasks (uid, parent_type, parent_id, name, assignee, status, project_
 
 -- Versions
 INSERT INTO versions (uid, project_id, task_id, vnum, status, created_by, created_at) VALUES
-  ('VER_ALN001', 'PROJ_AL13N5', 'TASK_MD1ALN', 1, 'draft',    'Jane',    now() - (random() * interval '30 days')),
-  ('VER_XEN001', 'PROJ_AL13N5', 'TASK_RG1XEN', 1, 'review',   'Alex',    now() - (random() * interval '30 days')),
-  ('VER_ALN002', 'PROJ_AL13N5', 'TASK_CP1ALN', 1, 'approved', 'Lucas',   now() - (random() * interval '30 days')),
-  ('VER_INT001', 'PROJ_1NTER5', 'TASK_FX1INT', 1, 'rejected', 'Claire',  now() - (random() * interval '30 days')),
-  ('VER_BGL001', 'PROJ_EV3RYT', 'TASK_AN1BGL', 1, 'draft',    'Evelyn',  now() - (random() * interval '30 days')),
-  ('VER_DBR001', 'PROJ_GR4VIT', 'TASK_LY1DBR', 1, 'review',   'Kowalski',now() - (random() * interval '30 days')),
-  ('VER_KNG001', 'PROJ_K1NGK0', 'TASK_FX1KNG', 1, 'approved', 'Ann',     now() - (random() * interval '30 days')),
-  ('VER_GRN001', 'PROJ_GR33NK', 'TASK_CP1GRN', 1, 'review',   'Dev',     now() - (random() * interval '30 days')),
-  ('VER_OPP001', 'PROJ_OPP3NH', 'TASK_SM1OPP', 1, 'rejected', 'Nolan',   now() - (random() * interval '30 days')),
-  ('VER_NEY001', 'PROJ_AV4TAR', 'TASK_TX1NEY', 1, 'draft',    'Riley',   now() - (random() * interval '30 days'));
+  ('VER_ALN001', 'PROJ_AL13N5', 'TASK_MD1ALN', 1, 'draft',    'Jane', random_time(30)),
+  ('VER_XEN001', 'PROJ_AL13N5', 'TASK_RG1XEN', 1, 'review',   'Alex', random_time(30)),
+  ('VER_ALN002', 'PROJ_AL13N5', 'TASK_CP1ALN', 1, 'approved', 'Lucas', random_time(30)),
+  ('VER_INT001', 'PROJ_1NTER5', 'TASK_FX1INT', 1, 'rejected', 'Claire', random_time(30)),
+  ('VER_BGL001', 'PROJ_EV3RYT', 'TASK_AN1BGL', 1, 'draft',    'Evelyn', random_time(30)),
+  ('VER_DBR001', 'PROJ_GR4VIT', 'TASK_LY1DBR', 1, 'review',   'Kowalski', random_time(30)),
+  ('VER_KNG001', 'PROJ_K1NGK0', 'TASK_FX1KNG', 1, 'approved', 'Ann', random_time(30)),
+  ('VER_GRN001', 'PROJ_GR33NK', 'TASK_CP1GRN', 1, 'review',   'Dev', random_time(30)),
+  ('VER_OPP001', 'PROJ_OPP3NH', 'TASK_SM1OPP', 1, 'rejected', 'Nolan', random_time(30)),
+  ('VER_NEY001', 'PROJ_AV4TAR', 'TASK_TX1NEY', 1, 'draft',    'Riley', random_time(30));
 
 -- Publishes
 INSERT INTO publishes (uid, project_id, version_id, type, representation, path, metadata, created_at) VALUES
-  ('PUB_ALN001', 'PROJ_ARR1VL', 'VER_ALN001', 'geo',   'usd', '/assets/heptapod_ship/v001/heptapod.usd',  '{}'::jsonb, now() - (random() * interval '30 days')),
-  ('PUB_XEN001', 'PROJ_AL13N5', 'VER_XEN001', 'rig',   'abc', '/assets/xenomorph/v001/xeno_rig.abc',      '{}'::jsonb, now() - (random() * interval '30 days')),
-  ('PUB_ALN002', 'PROJ_AL13N5', 'VER_ALN002', 'comp',  'exr', '/shots/alien/shot030/v001/final_comp.exr', '{}'::jsonb, now() - (random() * interval '30 days')),
-  ('PUB_INT001', 'PROJ_1NTER5', 'VER_INT001', 'fx',    'vdb', '/shots/interstellar/shot040/v001/nuke.vdb','{}'::jsonb, now() - (random() * interval '30 days')),
-  ('PUB_BGL001', 'PROJ_EV3RYT', 'VER_BGL001', 'fx',    'mov', '/assets/everything/bagel/v001/bagelfx.mov','{}'::jsonb, now() - (random() * interval '30 days')),
-  ('PUB_DBR001', 'PROJ_GR4VIT', 'VER_DBR001', 'layout','usd', '/shots/gravity/debrisfield/v001/layout.usd','{}'::jsonb,now() - (random() * interval '30 days')),
-  ('PUB_KNG001', 'PROJ_K1NGK0', 'VER_KNG001', 'fx',    'vdb', '/shots/kingkong/shot080/v001/explosion.vdb','{}'::jsonb,now() - (random() * interval '30 days')),
-  ('PUB_GRN001', 'PROJ_GR33NK', 'VER_GRN001', 'prep',  'exr', '/shots/greenknight/shot100/v001/prep.exr', '{}'::jsonb, now() - (random() * interval '30 days')),
-  ('PUB_OPP001', 'PROJ_OPP3NH', 'VER_OPP001', 'fx',    'mov', '/shots/oppenheimer/shot090/v001/explosion.mov','{}'::jsonb,now() - (random() * interval '30 days')),
-  ('PUB_NEY001', 'PROJ_AV4TAR', 'VER_NEY001', 'tex',   'png', '/assets/avatar/neytiri/v001/skin_diff.png','{}'::jsonb, now() - (random() * interval '30 days'));
+  ('PUB_ALN001', 'PROJ_ARR1VL', 'VER_ALN001', 'geo',   'usd', '/assets/heptapod_ship/v001/heptapod.usd', '{}'::jsonb, random_time(30)),
+  ('PUB_XEN001', 'PROJ_AL13N5', 'VER_XEN001', 'rig',   'abc', '/assets/xenomorph/v001/xeno_rig.abc', '{}'::jsonb, random_time(30)),
+  ('PUB_ALN002', 'PROJ_AL13N5', 'VER_ALN002', 'comp',  'exr', '/shots/alien/shot030/v001/final_comp.exr', '{}'::jsonb, random_time(30)),
+  ('PUB_INT001', 'PROJ_1NTER5', 'VER_INT001', 'fx',    'vdb', '/shots/interstellar/shot040/v001/nuke.vdb', '{}'::jsonb, random_time(30)),
+  ('PUB_BGL001', 'PROJ_EV3RYT', 'VER_BGL001', 'fx',    'mov', '/assets/everything/bagel/v001/bagelfx.mov', '{}'::jsonb, random_time(30)),
+  ('PUB_DBR001', 'PROJ_GR4VIT', 'VER_DBR001', 'layout','usd', '/shots/gravity/debrisfield/v001/layout.usd', '{}'::jsonb, random_time(30)),
+  ('PUB_KNG001', 'PROJ_K1NGK0', 'VER_KNG001', 'fx',    'vdb', '/shots/kingkong/shot080/v001/explosion.vdb', '{}'::jsonb, random_time(30)),
+  ('PUB_GRN001', 'PROJ_GR33NK', 'VER_GRN001', 'prep',  'exr', '/shots/greenknight/shot100/v001/prep.exr', '{}'::jsonb, random_time(30)),
+  ('PUB_OPP001', 'PROJ_OPP3NH', 'VER_OPP001', 'fx',    'mov', '/shots/oppenheimer/shot090/v001/explosion.mov', '{}'::jsonb, random_time(30)),
+  ('PUB_NEY001', 'PROJ_AV4TAR', 'VER_NEY001', 'tex',   'png', '/assets/avatar/neytiri/v001/skin_diff.png', '{}'::jsonb, random_time(30));
 

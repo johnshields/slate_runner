@@ -13,6 +13,7 @@ class Project(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), default=datetime.utcnow)
 
 
 class Asset(Base):
@@ -22,6 +23,7 @@ class Asset(Base):
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.uid", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     type: Mapped[str] = mapped_column(String, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), default=datetime.utcnow)
     __table_args__ = (UniqueConstraint("project_id", "name", name="uq_asset_project_name"),)
 
 
@@ -36,6 +38,7 @@ class Shot(Base):
     frame_out: Mapped[int] = mapped_column(Integer, nullable=False)
     fps: Mapped[Optional[float]] = mapped_column(nullable=True)
     colorspace: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), default=datetime.utcnow)
     __table_args__ = (UniqueConstraint("project_id", "seq", "shot", name="uq_shot_code"),)
 
 
@@ -49,6 +52,7 @@ class Task(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     assignee: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False, default="WIP")
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), default=datetime.utcnow)
     __table_args__ = (CheckConstraint("parent_type IN ('asset','shot')", name="ck_task_parent_type"),)
 
 
@@ -86,6 +90,7 @@ class RenderJob(Base):
     status: Mapped[str] = mapped_column(String, nullable=False, default="queued")
     submitted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), default=datetime.utcnow)
     logs: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), default=datetime.utcnow)
 
 
 class Event(Base):

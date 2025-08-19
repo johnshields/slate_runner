@@ -16,6 +16,7 @@ class ProjectOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
     name: str
+    created_at: datetime
 
 
 class ProjectCounts(BaseModel):
@@ -27,6 +28,7 @@ class ProjectOverviewOut(BaseModel):
     uid: str
     name: str
     counts: ProjectCounts
+    created_at: datetime
 
 
 class AssetOut(BaseModel):
@@ -35,6 +37,7 @@ class AssetOut(BaseModel):
     project_id: Optional[str] = None
     name: str
     type: Optional[str]
+    created_at: datetime
 
 
 class ShotOut(BaseModel):
@@ -47,6 +50,7 @@ class ShotOut(BaseModel):
     frame_out: int
     fps: Optional[float] = None
     colorspace: Optional[str] = None
+    created_at: datetime
 
 
 class TaskOut(BaseModel):
@@ -58,6 +62,7 @@ class TaskOut(BaseModel):
     name: str
     assignee: Optional[str] = None
     status: str
+    created_at: datetime
 
 
 class PublishOut(BaseModel):
