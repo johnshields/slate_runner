@@ -1,4 +1,6 @@
-﻿from pydantic import BaseModel, ConfigDict
+﻿from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 
@@ -17,6 +19,14 @@ class ProjectOverviewOut(BaseModel):
     uid: str
     name: str
     counts: ProjectCounts
+
+
+class AssetOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: str
+    project_id: Optional[str] = None
+    name: str
+    type: Optional[str]
 
 
 class ShotOut(BaseModel):

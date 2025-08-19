@@ -2,8 +2,8 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-from api.services.project_service import get_projects, get_project_overview
-from models.schemas import ProjectOut, ProjectOverviewOut
+from api.services.project_service import get_projects, get_project_overview, get_assets_by_project
+from models.schemas import ProjectOut, ProjectOverviewOut, AssetOut
 
 router = APIRouter()
 
@@ -27,3 +27,10 @@ def project_overview(
 ):
     """List project overview by ID"""
     return get_project_overview(db, project_uid)
+
+
+@router.get("/projects/{project_uid}/assets", response_model=list[AssetOut])
+def list_assets(project_uid: str, db: Session = Depends(get_db)):
+    """Returns all assets for a project"""
+    assets = get_assets_by_project(db, project_uid)
+    return assets

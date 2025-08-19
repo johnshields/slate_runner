@@ -1,7 +1,7 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from models.models import Project, Shot, Task
+from models.models import Project, Shot, Task, Asset
 from typing import Optional
 
 from models.schemas import ProjectOverviewOut
@@ -46,3 +46,8 @@ def get_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
         name=project.name,
         counts={"shots": shots_count, "tasks": tasks_count}
     )
+
+
+def get_assets_by_project(db: Session, project_uid: str):
+    stmt = select(Asset).where(Asset.project_id == project_uid).order_by(Asset.name.asc())
+    return db.execute(stmt).scalars().all()
