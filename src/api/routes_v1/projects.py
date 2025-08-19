@@ -3,9 +3,14 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.project_service as service
-from models.schemas import ProjectOut, ProjectOverviewOut, AssetOut, ShotOut, TaskOut, PublishOut
+from models.schemas import ProjectOut, ProjectOverviewOut, AssetOut, ShotOut, TaskOut, PublishOut, ProjectCreate
 
 router = APIRouter()
+
+
+@router.post("/projects", response_model=ProjectOut, status_code=201)
+def post_project(data: ProjectCreate, db: Session = Depends(get_db)):
+    return service.create_project(db, data)
 
 
 @router.get("/projects", response_model=list[ProjectOut])

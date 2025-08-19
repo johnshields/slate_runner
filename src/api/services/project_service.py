@@ -3,10 +3,26 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from models.models import Project, Asset, Shot, Task, Publish
 from typing import Optional
+from models.schemas import ProjectOverviewOut, ProjectCreate, ProjectOut
+import utils.utils as utils
 
-from models.schemas import ProjectOverviewOut
+
+# Create a new project, generate a UID if not provided.
+def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
+    uid = data.uid or utils.generate_uid("PROJ")
+
+    # Create new project instance
+    new_project = Project(uid=uid, name=data.name)
+
+    # Add to session and commit to DB
+    db.add(new_project)
+    db.commit()
+    db.refresh(new_project)
+
+    return new_project
 
 
+# Get a list of all projects, with optional filtering by UID or name
 def list_projects(
         db: Session,
         uid: Optional[str] = None,
@@ -23,20 +39,21 @@ def list_projects(
         stmt = stmt.where(Project.name.ilike(f"%{name}%"))
 
     stmt = stmt.order_by(Project.name.asc()).limit(limit).offset(offset)
-
     return db.execute(stmt).scalars().all()
 
 
+# Get basic counts and info for a single project
 def list_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
     project = db.scalar(select(Project).where(Project.uid == project_uid))
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
+    # Count shots and tasks for the project
     shots_count = db.scalar(select(func.count()).select_from(Shot).where(Shot.project_id == project_uid))
-
     tasks_count = db.scalar(
         select(func.count()).select_from(Task).where(
-            Task.project_id == project_uid, Task.parent_type == "shot"
+            Task.project_id == project_uid,
+            Task.parent_type == "shot"
         )
     )
 
@@ -47,6 +64,7 @@ def list_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
     )
 
 
+# Get all assets belonging to a project
 def list_project_assets(
         db: Session,
         project_uid: str
@@ -55,12 +73,13 @@ def list_project_assets(
     return db.execute(stmt).scalars().all()
 
 
+# Get all shots in a project, with optional filtering by seq, shot, or frame range
 def list_project_shots(
         db: Session,
         project_uid: str,
-        seq: str = None, shot:
-        str = None, range:
-        str = None
+        seq: str = None,
+        shot: str = None,
+        range: str = None
 ):
     stmt = select(Shot).where(Shot.project_id == project_uid)
 
@@ -79,6 +98,7 @@ def list_project_shots(
     return db.execute(stmt).scalars().all()
 
 
+# Get all tasks for a project, with optional filters for parent_type and status
 def list_project_tasks(
         db: Session,
         project_uid: str,
@@ -96,6 +116,7 @@ def list_project_tasks(
     return db.execute(stmt).scalars().all()
 
 
+# Get all publishes for a project, optionally filtered by type and representation
 def list_project_publishes(
         db: Session,
         project_uid: str,

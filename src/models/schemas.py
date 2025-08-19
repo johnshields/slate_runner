@@ -1,7 +1,11 @@
 ﻿from datetime import datetime
-
-from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from pydantic import BaseModel, ConfigDict
+
+
+class ProjectCreate(BaseModel):
+    uid: Optional[str] = None
+    name: str
 
 
 class ProjectOut(BaseModel):
