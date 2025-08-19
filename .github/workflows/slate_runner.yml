@@ -40,13 +40,18 @@ jobs:
           flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Start FastAPI with Uvicorn in background
+        env:
+          API_HOST: 127.0.0.1
+          API_PORT: 8000
+          LOG_LEVEL: info
         run: |
           source .venv/bin/activate
           export PYTHONPATH=src
-          python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8000 --log-level info > uvicorn.log 2>&1 &
+          python -m uvicorn main:app --app-dir src --host $API_HOST --port $API_PORT --log-level $LOG_LEVEL > uvicorn.log 2>&1 &
           echo $! > uvicorn.pid
           sleep 5
           cat uvicorn.log
+
 
       - name: Health check API
         run: |
