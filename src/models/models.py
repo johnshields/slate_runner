@@ -68,6 +68,7 @@ class Publish(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     version_id: Mapped[str] = mapped_column(ForeignKey("versions.uid", ondelete="CASCADE"), nullable=False)
+    project_id: Mapped[Optional[str]] = mapped_column(ForeignKey("projects.uid", ondelete="CASCADE"), nullable=True)
     type: Mapped[str] = mapped_column(String, nullable=False)
     representation: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     path: Mapped[str] = mapped_column(Text, nullable=False)

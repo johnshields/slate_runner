@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.project_service as service
-from models.schemas import ProjectOut, ProjectOverviewOut, AssetOut, ShotOut, TaskOut
+from models.schemas import ProjectOut, ProjectOverviewOut, AssetOut, ShotOut, TaskOut, PublishOut
 
 router = APIRouter()
 
@@ -63,3 +63,14 @@ def get_project_tasks(
         db: Session = Depends(get_db),
 ):
     return service.list_project_tasks(db, project_uid, parent_type, status)
+
+
+@router.get("/projects/{project_uid}/publishes", response_model=list[PublishOut])
+def get_project_publishes(
+        project_uid: str,
+        type: Optional[str] = Query(None, regex="^(comp|geo)$"),
+        rep: Optional[str] = Query(None, regex="^(mov|exr)$"),
+        db: Session = Depends(get_db)
+):
+    """Returns project publishes filtered by type and representation"""
+    return service.list_project_publishes(db, project_uid, type, rep)

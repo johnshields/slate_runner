@@ -1,7 +1,7 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from models.models import Project, Asset, Shot, Task
+from models.models import Project, Asset, Shot, Task, Publish
 from typing import Optional
 
 from models.schemas import ProjectOverviewOut
@@ -111,4 +111,20 @@ def list_project_tasks(
                 select(Shot.uid).where(Shot.project_id == project_uid)
             ))
         )
+    return db.execute(stmt).scalars().all()
+
+
+def list_project_publishes(
+        db: Session,
+        project_uid: str,
+        type: str = None,
+        rep: str = None
+):
+    stmt = select(Publish).where(Publish.project_id == project_uid)
+
+    if type:
+        stmt = stmt.where(Publish.type == type)
+    if rep:
+        stmt = stmt.where(Publish.representation == rep)
+
     return db.execute(stmt).scalars().all()

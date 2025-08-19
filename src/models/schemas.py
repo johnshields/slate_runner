@@ -1,4 +1,6 @@
-﻿from pydantic import BaseModel, ConfigDict
+﻿from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
 from typing import Optional
 
 
@@ -49,6 +51,18 @@ class TaskOut(BaseModel):
     status: str
 
 
+class PublishOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: str
+    project_id: Optional[str] = None
+    version_id: str
+    type: str
+    representation: Optional[str] = None
+    path: str
+    meta: dict
+    created_at: datetime
+
+
 class VersionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
@@ -56,15 +70,4 @@ class VersionOut(BaseModel):
     vnum: int
     status: str
     created_by: Optional[str] = None
-    created_at: Optional[str] = None
-
-
-class PublishOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    uid: str
-    version_id: str
-    type: str
-    representation: Optional[str] = None
-    path: str
-    meta: dict
-    created_at: Optional[str] = None
+    created_at: datetime
