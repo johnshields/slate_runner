@@ -47,11 +47,13 @@ jobs:
         run: |
           source .venv/bin/activate
           export PYTHONPATH=src
+          export API_HOST=$API_HOST
+          export API_PORT=$API_PORT
+          export LOG_LEVEL=$LOG_LEVEL
           python -m uvicorn main:app --app-dir src --host $API_HOST --port $API_PORT --log-level $LOG_LEVEL > uvicorn.log 2>&1 &
           echo $! > uvicorn.pid
           sleep 5
           cat uvicorn.log
-
 
       - name: Health check API
         run: |
