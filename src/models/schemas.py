@@ -8,6 +8,17 @@ class ProjectOut(BaseModel):
     name: str
 
 
+class ProjectCounts(BaseModel):
+    shots: int
+    tasks: int
+
+
+class ProjectOverviewOut(BaseModel):
+    uid: str
+    name: str
+    counts: ProjectCounts
+
+
 class ShotOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
