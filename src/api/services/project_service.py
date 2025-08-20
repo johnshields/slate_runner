@@ -103,6 +103,8 @@ def list_project_assets(
         db: Session,
         project_uid: str
 ):
+    utils.db_lookup(db, Project, project_uid)
+
     stmt = select(Asset).where(Asset.project_id == project_uid).order_by(Asset.name.asc())
     return db.execute(stmt).scalars().all()
 
@@ -115,8 +117,9 @@ def list_project_shots(
         shot: str = None,
         range: str = None
 ):
-    stmt = select(Shot).where(Shot.project_id == project_uid)
+    utils.db_lookup(db, Project, project_uid)
 
+    stmt = select(Shot).where(Shot.project_id == project_uid)
     if seq:
         stmt = stmt.where(Shot.seq == seq)
     if shot:
@@ -139,8 +142,9 @@ def list_project_tasks(
         parent_type: Optional[str] = None,
         status: Optional[str] = None,
 ):
-    stmt = select(Task).where(Task.project_id == project_uid)
+    utils.db_lookup(db, Project, project_uid)
 
+    stmt = select(Task).where(Task.project_id == project_uid)
     if parent_type:
         stmt = stmt.where(Task.parent_type == parent_type)
 
@@ -157,8 +161,9 @@ def list_project_publishes(
         type: str = None,
         rep: str = None
 ):
-    stmt = select(Publish).where(Publish.project_id == project_uid)
+    utils.db_lookup(db, Project, project_uid)
 
+    stmt = select(Publish).where(Publish.project_id == project_uid)
     if type:
         stmt = stmt.where(Publish.type == type)
     if rep:

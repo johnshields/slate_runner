@@ -72,6 +72,7 @@ def delete_asset(db: Session, identifier: str) -> dict:
     return {"detail": f"Asset '{identifier}' deleted successfully"}
 
 
+# Get a list of all assets, with optional filtering by UID or name
 def list_assets(
         db: Session,
         uid: Optional[str] = None,
@@ -91,15 +92,12 @@ def list_assets(
     return db.execute(stmt).scalars().all()
 
 
+# Get all tasks belonging to an asset
 def list_asset_tasks(db: Session, asset_uid: str) -> list[TaskOut]:
-    # Validate asset exists
-    asset = db.scalar(select(Asset).where(Asset.uid == asset_uid))
-    if not asset:
-        raise HTTPException(status_code=404, detail="Asset not found")
+    utils.db_lookup(db, Asset, asset_uid)
 
     stmt = select(Task).where(
-        Task.parent_type == "asset",
-        Task.parent_id == asset_uid
+        Task.parent_type == "asset", Task.parent_id == asset_uid
     ).order_by(Task.name.asc())
 
     return db.execute(stmt).scalars().all()
