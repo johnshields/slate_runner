@@ -62,7 +62,7 @@ def get_project_assets(
         project_uid: str,
         db: Session = Depends(get_db)
 ):
-    """Returns all assets for a Project"""
+    """Returns all Assets for a Project"""
     assets = service.list_project_assets(db, project_uid)
     return assets
 

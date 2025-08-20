@@ -1,4 +1,6 @@
-﻿from fastapi import APIRouter, Depends
+﻿from typing import Optional
+
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.db import get_db
 import api.services.asset_service as service
@@ -33,3 +35,24 @@ def delete_asset(
 ):
     """Delete an Asset by UID or Name"""
     return service.delete_asset(db, identifier)
+
+
+@router.get("/assets", response_model=list[schemas.AssetOut])
+def get_assets(
+        uid: Optional[str] = None,
+        name: Optional[str] = None,
+        limit: int = 100,
+        offset: int = 0,
+        db: Session = Depends(get_db)
+):
+    """List or search Assets by UID or name"""
+    return service.list_assets(db, uid, name, limit, offset) \
+
+
+@router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.TaskOut])
+def get_asset_tasks(
+        asset_uid: str,
+        db: Session = Depends(get_db)
+):
+    """Returns all Tasks for an Asset"""
+    return service.list_asset_tasks(db, asset_uid)

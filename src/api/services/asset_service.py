@@ -1,8 +1,10 @@
-﻿from fastapi import HTTPException
+﻿from typing import Optional
+
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models.models import Asset, Project
-from models.schemas import AssetCreate, AssetOut, AssetUpdate
+from models.models import Asset, Project, Task
+from models.schemas import AssetCreate, AssetOut, AssetUpdate, TaskOut
 import utils.utils as utils
 
 
@@ -68,3 +70,36 @@ def delete_asset(db: Session, identifier: str) -> dict:
     db.delete(project)
     db.commit()
     return {"detail": f"Asset '{identifier}' deleted successfully"}
+
+
+def list_assets(
+        db: Session,
+        uid: Optional[str] = None,
+        name: Optional[str] = None,
+        limit: int = 100,
+        offset: int = 0,
+):
+    stmt = select(Asset)
+
+    if uid:
+        stmt = stmt.where(Asset.uid == uid)
+
+    if name:
+        stmt = stmt.where(Asset.name.ilike(f"%{name}%"))
+
+    stmt = stmt.order_by(Asset.name.asc()).limit(limit).offset(offset)
+    return db.execute(stmt).scalars().all()
+
+
+def list_asset_tasks(db: Session, asset_uid: str) -> list[TaskOut]:
+    # Validate asset exists
+    asset = db.scalar(select(Asset).where(Asset.uid == asset_uid))
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    stmt = select(Task).where(
+        Task.parent_type == "asset",
+        Task.parent_id == asset_uid
+    ).order_by(Task.name.asc())
+
+    return db.execute(stmt).scalars().all()
