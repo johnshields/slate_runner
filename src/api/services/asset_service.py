@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from models.models import Asset, Project
-from models.schemas import AssetCreate, AssetOut
+from models.schemas import AssetCreate, AssetOut, AssetUpdate
 import utils.utils as utils
 
 
@@ -28,3 +28,43 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     db.refresh(new_asset)
 
     return new_asset
+
+
+# Update an asset by UID or name
+def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
+    # Find asset by UID or name
+    stmt = select(Asset).where((Asset.uid == identifier) | (Asset.name == identifier))
+    asset = db.scalar(stmt)
+
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    # Optionally update project association if project_uid is provided
+    if data.project_uid:
+        project = db.scalar(select(Project).where(Project.uid == data.project_uid))
+        if not project:
+            raise HTTPException(status_code=404, detail="Target project not found")
+        asset.project_id = project.uid
+
+    # Update other fields if provided
+    if data.name:
+        asset.name = data.name
+    if data.type:
+        asset.type = data.type
+
+    db.commit()
+    db.refresh(asset)
+    return asset
+
+
+# Delete an asset by UID or name
+def delete_asset(db: Session, identifier: str) -> dict:
+    stmt = select(Asset).where((Asset.uid == identifier) | (Asset.name == identifier))
+    project = db.scalar(stmt)
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    db.delete(project)
+    db.commit()
+    return {"detail": f"Asset '{identifier}' deleted successfully"}

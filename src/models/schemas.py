@@ -49,6 +49,12 @@ class AssetCreate(BaseModel):
     type: Optional[str] = None
 
 
+class AssetUpdate(BaseModel):
+    project_uid: Optional[str] = None
+    name: Optional[str] = None
+    type: Optional[str] = None
+
+
 # Shot schemas
 class ShotOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
