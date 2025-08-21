@@ -1,5 +1,5 @@
 ﻿from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 from pydantic import BaseModel, ConfigDict
 
 
@@ -105,3 +105,27 @@ class PublishOut(BaseModel):
     path: str
     meta: dict
     created_at: datetime
+
+
+class RenderJobOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: str
+    project_id: Optional[str] = None
+    version_id: Optional[str] = None
+    context: Dict[str, Any]
+    adapter: str
+    status: str
+    logs: Optional[str] = None
+    submitted_at: datetime
+    created_at: datetime
+    updated_at: datetime
+
+
+class EventOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: str
+    project_id: Optional[str] = None
+    kind: str
+    payload: Dict[str, Any]
+    created_at: datetime
+    updated_at: datetime
