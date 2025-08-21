@@ -2,23 +2,21 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-import api.services.version_service as service
+import api.services.render_service as service
 import models.schemas as schemas
 
 router = APIRouter()
 
 
-@router.get("/versions", response_model=list[schemas.VersionOut])
-def get_versions(
+@router.get("/renders", response_model=list[schemas.RenderJobOut])
+def get_render_jobs(
         uid: Optional[str] = None,
         project_id: Optional[str] = None,
-        task_id: Optional[str] = None,
-        vnum: Optional[int] = None,
+        adapter: Optional[str] = None,
         status: Optional[str] = None,
-        created_by: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Versions with optional filters"""
-    return service.list_versions(db, uid, project_id, task_id, vnum, status, created_by, limit, offset)
+    """List or search Render Jobs with optional filters"""
+    return service.list_render_jobs(db, uid, project_id, adapter, status, limit, offset)

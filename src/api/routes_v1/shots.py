@@ -18,4 +18,4 @@ def get_shots(
         db: Session = Depends(get_db),
 ):
     """List or search Shots with optional filters"""
-    return service.list_shots(db, uid=uid, project_id=project_id, shot=shot, limit=limit, offset=offset)
+    return service.list_shots(db, uid, project_id, shot, limit, offset)

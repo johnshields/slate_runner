@@ -45,7 +45,7 @@ def get_projects(
         db: Session = Depends(get_db),
 ):
     """List or search Projects by UID or name"""
-    return service.list_projects(db, uid=uid, name=name, limit=limit, offset=offset)
+    return service.list_projects(db, uid, name, limit, offset)
 
 
 @router.get("/projects/{project_uid}/overview", response_model=schemas.ProjectOverviewOut)
@@ -54,7 +54,7 @@ def project_overview(
         db: Session = Depends(get_db)
 ):
     """List Project overview by UID"""
-    return service.list_project_overview(db, project_uid)
+    return service.list_project_overview(db, project_uid=project_uid)
 
 
 @router.get("/projects/{project_uid}/assets", response_model=list[schemas.AssetOut])

@@ -14,6 +14,7 @@ class Project(Base):
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
 
 
 class Asset(Base):
@@ -24,6 +25,7 @@ class Asset(Base):
     name: Mapped[str] = mapped_column(String, nullable=False)
     type: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     __table_args__ = (UniqueConstraint("project_id", "name", name="uq_asset_project_name"),)
 
 
@@ -39,6 +41,7 @@ class Shot(Base):
     fps: Mapped[Optional[float]] = mapped_column(nullable=True)
     colorspace: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     __table_args__ = (UniqueConstraint("project_id", "seq", "shot", name="uq_shot_code"),)
 
 
@@ -53,6 +56,7 @@ class Task(Base):
     assignee: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, nullable=False, default="WIP")
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     __table_args__ = (CheckConstraint("parent_type IN ('asset','shot')", name="ck_task_parent_type"),)
 
 
@@ -66,6 +70,7 @@ class Version(Base):
     status: Mapped[str] = mapped_column(String, nullable=False, default="draft")
     created_by: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     __table_args__ = (UniqueConstraint("task_id", "vnum", name="uq_version_per_task"),)
 
 
@@ -80,6 +85,7 @@ class Publish(Base):
     path: Mapped[str] = mapped_column(Text, nullable=False)
     meta: Mapped[dict] = mapped_column("metadata", JSONB, default=dict)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
 
 
 class RenderJob(Base):
@@ -93,6 +99,7 @@ class RenderJob(Base):
     logs: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     submitted_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     __table_args__ = (
         CheckConstraint("status IN ('queued','running','succeeded','failed')", name="ck_render_jobs_status", ),)
 
@@ -105,3 +112,4 @@ class Event(Base):
     kind: Mapped[str] = mapped_column(String, nullable=False)
     payload: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict, nullable=False)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)

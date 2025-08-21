@@ -9,6 +9,7 @@ class ProjectOut(BaseModel):
     uid: str
     name: str
     created_at: datetime
+    updated_at: datetime
 
 
 class ProjectCreate(BaseModel):
@@ -40,6 +41,7 @@ class AssetOut(BaseModel):
     name: str
     type: Optional[str]
     created_at: datetime
+    updated_at: datetime
 
 
 class AssetCreate(BaseModel):
@@ -67,6 +69,7 @@ class ShotOut(BaseModel):
     fps: Optional[float] = None
     colorspace: Optional[str] = None
     created_at: datetime
+    updated_at: datetime
 
 
 # Task schemas
@@ -80,6 +83,7 @@ class TaskOut(BaseModel):
     assignee: Optional[str] = None
     status: str
     created_at: datetime
+    updated_at: datetime
 
 
 # Version schemas
@@ -92,6 +96,7 @@ class VersionOut(BaseModel):
     status: str
     created_by: Optional[str] = None
     created_at: datetime
+    updated_at: datetime
 
 
 # Publish schemas
@@ -100,18 +105,19 @@ class PublishOut(BaseModel):
     uid: str
     project_id: Optional[str] = None
     version_id: str
-    type: str
+    type: Optional[float] = None
     representation: Optional[str] = None
     path: str
     meta: dict
     created_at: datetime
+    updated_at: datetime
 
 
+# RenderJob schemas
 class RenderJobOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
     project_id: Optional[str] = None
-    version_id: Optional[str] = None
     context: Dict[str, Any]
     adapter: str
     status: str
@@ -121,6 +127,7 @@ class RenderJobOut(BaseModel):
     updated_at: datetime
 
 
+# Event schemas
 class EventOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str

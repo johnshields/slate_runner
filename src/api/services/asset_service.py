@@ -72,11 +72,12 @@ def delete_asset(db: Session, identifier: str) -> dict:
     return {"detail": f"Asset '{identifier}' deleted successfully"}
 
 
-# Get a list of all assets, with optional filtering by UID or name
+# Get a list of all assets, with optional filtering
 def list_assets(
         db: Session,
         uid: Optional[str] = None,
         name: Optional[str] = None,
+        type: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
 ):
@@ -87,6 +88,9 @@ def list_assets(
 
     if name:
         stmt = stmt.where(Asset.name.ilike(f"%{name}%"))
+
+    if type:
+        stmt = stmt.where(Asset.type == type)
 
     stmt = stmt.order_by(Asset.name.asc()).limit(limit).offset(offset)
     return db.execute(stmt).scalars().all()

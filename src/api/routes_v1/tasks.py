@@ -22,15 +22,4 @@ def get_tasks(
         db: Session = Depends(get_db),
 ):
     """List or search tasks with optional filters"""
-    return service.list_tasks(
-        db,
-        uid=uid,
-        project_id=project_id,
-        parent_type=parent_type,
-        parent_id=parent_id,
-        name=name,
-        assignee=assignee,
-        status=status,
-        limit=limit,
-        offset=offset,
-    )
+    return service.list_tasks(db, uid, project_id, parent_type, parent_id, name, assignee, status, limit, offset)

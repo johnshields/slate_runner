@@ -21,14 +21,4 @@ def get_publishes(
         db: Session = Depends(get_db),
 ):
     """List or search Publishes with optional filters"""
-    return service.list_publishes(
-        db=db,
-        uid=uid,
-        project_id=project_id,
-        version_id=version_id,
-        type=type,
-        representation=representation,
-        path=path,
-        limit=limit,
-        offset=offset
-    )
+    return service.list_publishes(db, uid, project_id, version_id, type, representation, path, limit, offset)
