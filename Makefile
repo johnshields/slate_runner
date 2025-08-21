@@ -9,7 +9,7 @@ venv:
 install: venv
 	$(PIP) install -r requirements.txt
 
-run: venv
+run:
 	$(PYTHON) -m uvicorn src.main:app --host 127.0.0.1 --port 8049 --reload
 
 clean:

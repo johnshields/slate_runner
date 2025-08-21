@@ -82,6 +82,18 @@ class TaskOut(BaseModel):
     created_at: datetime
 
 
+# Version schemas
+class VersionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: str
+    project_id: str
+    task_id: str
+    vnum: int
+    status: str
+    created_by: Optional[str] = None
+    created_at: datetime
+
+
 # Publish schemas
 class PublishOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -92,15 +104,4 @@ class PublishOut(BaseModel):
     representation: Optional[str] = None
     path: str
     meta: dict
-    created_at: datetime
-
-
-# Version schemas
-class VersionOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-    uid: str
-    task_id: str
-    vnum: int
-    status: str
-    created_by: Optional[str] = None
     created_at: datetime

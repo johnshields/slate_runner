@@ -60,6 +60,7 @@ class Version(Base):
     __tablename__ = "versions"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    project_id: Mapped[Optional[str]] = mapped_column(ForeignKey("projects.uid", ondelete="CASCADE"), nullable=True)
     task_id: Mapped[str] = mapped_column(ForeignKey("tasks.uid", ondelete="CASCADE"), nullable=False)
     vnum: Mapped[int] = mapped_column(Integer, nullable=False)
     status: Mapped[str] = mapped_column(String, nullable=False, default="draft")

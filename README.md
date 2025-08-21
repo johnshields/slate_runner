@@ -1,5 +1,5 @@
 # slate_runner 🎬🐍
-RESTful API for fixing it in post.
+RESTful FastAPI for fixing it in post.
 
 #### Run service:
 ```bash

@@ -41,7 +41,7 @@ def create_app() -> FastAPI:
     api = FastAPI(
         title="slate_runner_api",
         version="0.0.1",
-        description="RESTful API for fixing it in post.",
+        description="RESTful FastAPI for fixing it in post.",
         lifespan=lifespan,
     )
 
@@ -64,7 +64,7 @@ def create_app() -> FastAPI:
           </head>
           <body style="font-family: ui-sans-serif, system-ui">
             <h1>slate_runner</h1>
-            <p><strong>RESTful API for fixing it in post.</strong></p>
+            <p><strong>RESTful FastAPI for fixing it in post.</strong></p>
             <p>See <a href="/api/">/api/</a> for status or <a href="/docs">/docs</a> for OpenAPI.</p>
             <p>See <a href="https://kntn.ly/a573c361" target="_blank">GitHub Repo</a></p>
           </body>

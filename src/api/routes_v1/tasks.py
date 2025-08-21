@@ -21,7 +21,7 @@ def get_tasks(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search tasks using any combination of filters."""
+    """List or search tasks with optional filters"""
     return service.list_tasks(
         db,
         uid=uid,

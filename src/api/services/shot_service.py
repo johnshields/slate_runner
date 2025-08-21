@@ -3,7 +3,7 @@ from sqlalchemy import select
 from models.models import Shot
 from typing import Optional
 
-# Get a list of all shots, with optional filtering by UID or name
+# Get a list of tasks versions, with optional filtering
 def list_shots(
         db: Session,
         uid: Optional[str] = None,
