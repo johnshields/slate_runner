@@ -117,3 +117,20 @@ INSERT INTO events (project_id, kind, payload, created_at, updated_at) VALUES
   ('PROJ_OPP3NH', 'publish.created', '{"publish":"PUB_OPP001","version":"VER_OPP001","type":"fx"}'::jsonb, random_time(30), now());
 
 
+-- Make the version live on Arrival
+UPDATE versions
+SET project_id = 'PROJ_ARR1VL'
+WHERE uid = 'VER_ALN001';
+
+-- Align render_jobs for that version with the correct project
+UPDATE render_jobs
+SET project_id = 'PROJ_ARR1VL'
+WHERE version_id = 'VER_ALN001';
+
+-- Fix the mismatched events that reference VER_ALN001 under the Alien project
+UPDATE events
+SET project_id = 'PROJ_ARR1VL'
+WHERE project_id = 'PROJ_AL13N5'
+  AND payload->>'version' = 'VER_ALN001';
+
+
