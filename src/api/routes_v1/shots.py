@@ -39,11 +39,11 @@ def delete_shot(
 @router.get("/shots", response_model=list[schemas.ShotOut])
 def get_shots(
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         shot: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
     """List or search Shots with optional filters"""
-    return service.list_shots(db, uid, project_id, shot, limit, offset)
+    return service.list_shots(db, uid, project_uid, shot, limit, offset)

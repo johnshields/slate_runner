@@ -7,7 +7,7 @@ from typing import Optional
 def list_events(
         db: Session,
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         kind: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
@@ -17,8 +17,8 @@ def list_events(
     if uid:
         stmt = stmt.where(Event.uid == uid)
 
-    if project_id:
-        stmt = stmt.where(Event.project_id == project_id)
+    if project_uid:
+        stmt = stmt.where(Event.project_uid == project_uid)
 
     if kind:
         stmt = stmt.where(Event.kind == kind)

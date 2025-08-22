@@ -27,8 +27,14 @@ def generate_uid(prefix: str, length: int = 6) -> str:
     return f"{prefix}_{suffix}"
 
 
-def db_lookup(db: Session, model, uid: str):
-    asset = db.scalar(select(model).where(model.uid == uid))
-    if not asset:
-        raise HTTPException(status_code=404, detail=f"{model.__name__} with UID '{uid}' not found.")
-    return asset
+def db_lookup(db: Session, model, identifier: str) -> object:
+    item = db.scalar(select(model).where(model.uid == identifier))
+    if not item and hasattr(model, 'name'):
+        item = db.scalar(select(model).where(model.name == identifier))
+
+    if not item:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{model.__name__} with UID or name '{identifier}' not found."
+        )
+    return item

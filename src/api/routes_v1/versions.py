@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/versions", response_model=list[schemas.VersionOut])
 def get_versions(
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         task_id: Optional[str] = None,
         vnum: Optional[int] = None,
         status: Optional[str] = None,
@@ -21,4 +21,4 @@ def get_versions(
         db: Session = Depends(get_db),
 ):
     """List or search Versions with optional filters"""
-    return service.list_versions(db, uid, project_id, task_id, vnum, status, created_by, limit, offset)
+    return service.list_versions(db, uid, project_uid, task_id, vnum, status, created_by, limit, offset)

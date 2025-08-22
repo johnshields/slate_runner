@@ -8,7 +8,7 @@ from typing import Optional
 def list_render_jobs(
         db: Session,
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         adapter: Optional[str] = None,
         status: Optional[str] = None,
         limit: int = 100,
@@ -19,8 +19,8 @@ def list_render_jobs(
     if uid:
         stmt = stmt.where(RenderJob.uid == uid)
 
-    if project_id:
-        stmt = stmt.where(RenderJob.project_id == project_id)
+    if project_uid:
+        stmt = stmt.where(RenderJob.project_uid == project_uid)
 
     if adapter:
         stmt = stmt.where(RenderJob.adapter == adapter)

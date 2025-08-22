@@ -37,7 +37,7 @@ class ProjectOverviewOut(BaseModel):
 class AssetOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: Optional[str] = None
+    project_uid: Optional[str] = None
     name: str
     type: Optional[str]
     created_at: datetime
@@ -46,7 +46,7 @@ class AssetOut(BaseModel):
 
 class AssetCreate(BaseModel):
     uid: Optional[str] = None
-    project_id: str
+    project_uid: str
     name: str
     type: Optional[str] = None
 
@@ -61,7 +61,7 @@ class AssetUpdate(BaseModel):
 class ShotOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: Optional[str] = None
+    project_uid: Optional[str] = None
     seq: str
     shot: str
     frame_in: int
@@ -74,7 +74,8 @@ class ShotOut(BaseModel):
 
 class ShotCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    project_id: str
+    uid: Optional[str] = None
+    project_uid: str
     seq: str
     shot: str
     frame_in: int
@@ -84,7 +85,7 @@ class ShotCreate(BaseModel):
 
 
 class ShotUpdate(BaseModel):
-    project_id: Optional[str] = None
+    project_uid: Optional[str] = None
     seq: Optional[str] = None
     shot: Optional[str] = None
     frame_in: Optional[int] = None
@@ -97,9 +98,9 @@ class ShotUpdate(BaseModel):
 class TaskOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: str
+    project_uid: Optional[str] = None
     parent_type: str
-    parent_id: str
+    parent_uid: Optional[str] = None
     name: str
     assignee: Optional[str] = None
     status: str
@@ -111,8 +112,8 @@ class TaskOut(BaseModel):
 class VersionOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: str
-    task_id: str
+    project_uid: Optional[str] = None
+    task_uid: Optional[str] = None
     vnum: int
     status: str
     created_by: Optional[str] = None
@@ -124,8 +125,8 @@ class VersionOut(BaseModel):
 class PublishOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: Optional[str] = None
-    version_id: str
+    project_uid: Optional[str] = None
+    version_uid: Optional[str] = None
     type: Optional[str] = None
     representation: Optional[str] = None
     path: str
@@ -138,7 +139,7 @@ class PublishOut(BaseModel):
 class RenderJobOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: Optional[str] = None
+    project_uid: Optional[str] = None
     context: Dict[str, Any]
     adapter: str
     status: str
@@ -152,7 +153,7 @@ class RenderJobOut(BaseModel):
 class EventOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: Optional[str] = None
+    project_uid: Optional[str] = None
     kind: str
     payload: Dict[str, Any]
     created_at: datetime

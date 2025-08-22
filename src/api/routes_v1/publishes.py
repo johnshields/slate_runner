@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/publishes", response_model=list[schemas.PublishOut])
 def get_publishes(
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         version_id: Optional[str] = None,
         type: Optional[str] = None,
         representation: Optional[str] = None,
@@ -21,4 +21,4 @@ def get_publishes(
         db: Session = Depends(get_db),
 ):
     """List or search Publishes with optional filters"""
-    return service.list_publishes(db, uid, project_id, version_id, type, representation, path, limit, offset)
+    return service.list_publishes(db, uid, project_uid, version_id, type, representation, path, limit, offset)

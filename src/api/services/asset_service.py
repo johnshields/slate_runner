@@ -11,20 +11,18 @@ import utils.utils as utils
 # Create a new asset, generate a UID if not provided.
 def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     # check if project exists
-    project = db.scalar(select(Project).where(Project.uid == data.project_id))
-    if not project:
-        raise HTTPException(status_code=404, detail=f"Project '{data.project_id}' not found")
+    project = utils.db_lookup(db, Project, data.project_uid)
 
     # Check if asset with same name already exists in this project
-    if db.scalar(select(Asset).where(Asset.project_id == data.project_id, Asset.name == data.name)):
+    if db.scalar(select(Asset).where(Asset.project_uid == data.project_uid, Asset.name == data.name)):
         raise HTTPException(
             status_code=409,
-            detail=f"Asset '{data.name}' already exists in project '{data.project_id}'."
+            detail=f"Asset '{data.name}' already exists in project '{data.project_uid}'."
         )
 
     # Create and persist asset
     uid = data.uid or utils.generate_uid("ASSET")
-    new_asset = Asset(uid=uid, project_id=project.uid, name=data.name, type=data.type)
+    new_asset = Asset(uid=uid, project_uid=project.uid, name=data.name, type=data.type)
     db.add(new_asset)
     db.commit()
     db.refresh(new_asset)
@@ -35,18 +33,14 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
 # Update an asset by UID or name
 def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
     # Find asset by UID or name
-    stmt = select(Asset).where((Asset.uid == identifier) | (Asset.name == identifier))
-    asset = db.scalar(stmt)
-
-    if not asset:
-        raise HTTPException(status_code=404, detail=f"Asset '{identifier}' not found")
+    asset = utils.db_lookup(db, Asset, identifier)
 
     # Optionally update project association if project_uid is provided
-    if data.project_id:
-        project = db.scalar(select(Project).where(Project.uid == data.project_id))
+    if data.project_uid:
+        project = db.scalar(select(Project).where(Project.uid == data.project_uid))
         if not project:
             raise HTTPException(status_code=404, detail="Target project not found")
-        asset.project_id = project.uid
+        asset.project_uid = project.uid
 
     # Update other fields if provided
     if data.name:
@@ -61,11 +55,7 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
 
 # Delete an asset by UID or name
 def delete_asset(db: Session, identifier: str) -> dict:
-    stmt = select(Asset).where((Asset.uid == identifier) | (Asset.name == identifier))
-    asset = db.scalar(stmt)
-
-    if not asset:
-        raise HTTPException(status_code=404, detail=f"Asset '{identifier}' not found")
+    asset = utils.db_lookup(db, Asset, identifier)
 
     db.delete(asset)
     db.commit()
@@ -76,6 +66,7 @@ def delete_asset(db: Session, identifier: str) -> dict:
 def list_assets(
         db: Session,
         uid: Optional[str] = None,
+        project_uid: Optional[str] = None,
         name: Optional[str] = None,
         type: Optional[str] = None,
         limit: int = 100,
@@ -85,6 +76,9 @@ def list_assets(
 
     if uid:
         stmt = stmt.where(Asset.uid == uid)
+
+    if project_uid:
+        stmt = stmt.where(Asset.project_uid == project_uid)
 
     if name:
         stmt = stmt.where(Asset.name.ilike(f"%{name}%"))
@@ -101,7 +95,7 @@ def list_asset_tasks(db: Session, asset_uid: str) -> list[TaskOut]:
     utils.db_lookup(db, Asset, asset_uid)
 
     stmt = select(Task).where(
-        Task.parent_type == "asset", Task.parent_id == asset_uid
+        Task.parent_type == "asset", Task.parent_uid == asset_uid
     ).order_by(Task.name.asc())
 
     return db.execute(stmt).scalars().all()

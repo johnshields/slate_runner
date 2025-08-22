@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/tasks", response_model=list[schemas.TaskOut])
 def get_tasks(
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         parent_type: Optional[str] = None,
         parent_id: Optional[str] = None,
         name: Optional[str] = None,
@@ -22,4 +22,4 @@ def get_tasks(
         db: Session = Depends(get_db),
 ):
     """List or search tasks with optional filters"""
-    return service.list_tasks(db, uid, project_id, parent_type, parent_id, name, assignee, status, limit, offset)
+    return service.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset)

@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get("/renders", response_model=list[schemas.RenderJobOut])
 def get_render_jobs(
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         adapter: Optional[str] = None,
         status: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
@@ -19,4 +19,4 @@ def get_render_jobs(
         db: Session = Depends(get_db),
 ):
     """List or search Render Jobs with optional filters"""
-    return service.list_render_jobs(db, uid, project_id, adapter, status, limit, offset)
+    return service.list_render_jobs(db, uid, project_uid, adapter, status, limit, offset)

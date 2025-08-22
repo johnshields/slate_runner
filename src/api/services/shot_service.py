@@ -11,15 +11,13 @@ from utils import utils
 # Create a new shot, generate a UID if not provided.
 def create_shot(db: Session, data: ShotCreate) -> ShotOut:
     # check if project exists
-    project = db.scalar(select(Project).where(Project.uid == data.project_id))
-    if not project:
-        raise HTTPException(status_code=404, detail=f"Project '{data.project_id}' not found")
+    project = utils.db_lookup(db, Project, data.project_uid)
 
     # Create and persist shot
     uid = data.uid or utils.generate_uid("SHOT")
     new_shot = Shot(
         uid=uid,
-        project_id=project.uid,
+        project_uid=project.uid,
         shot=data.shot,
         seq=data.seq,
         frame_in=data.frame_in,
@@ -37,15 +35,11 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
 # Update a shot by UID
 def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
     # Find shot by UID
-    stmt = select(Shot).where((Shot.uid == uid))
-    shot = db.scalar(stmt)
-
-    if not shot:
-        raise HTTPException(status_code=404, detail=f"Shot '{uid}' not found")
+    shot = utils.db_lookup(db, Shot, uid)
 
     # Optionally update project association if project_uid is provided
-    if data.project_id:
-        project = db.scalar(select(Project).where(Project.uid == data.project_id))
+    if data.project_uid:
+        project = db.scalar(select(Project).where(Project.uid == data.project_uid))
         if not project:
             raise HTTPException(status_code=404, detail="Target project not found")
         shot.project_id = project.uid
@@ -71,11 +65,7 @@ def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
 
 # Delete a shot by UID
 def delete_shot(db: Session, uid: str) -> dict:
-    stmt = select(Shot).where((Shot.uid == uid))
-    shot = db.scalar(stmt)
-
-    if not shot:
-        raise HTTPException(status_code=404, detail=f"Shot '{uid}' not found")
+    shot = utils.db_lookup(db, Shot, uid)
 
     db.delete(shot)
     db.commit()
@@ -86,7 +76,7 @@ def delete_shot(db: Session, uid: str) -> dict:
 def list_shots(
         db: Session,
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         shot: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
@@ -96,8 +86,8 @@ def list_shots(
     if uid:
         stmt = stmt.where(Shot.uid == uid)
 
-    if project_id:
-        stmt = stmt.where(Shot.project_id == project_id)
+    if project_uid:
+        stmt = stmt.where(Shot.project_uid == project_uid)
 
     if shot:
         stmt = stmt.where(Shot.shot.ilike(f"%{shot}%"))

@@ -8,8 +8,8 @@ from typing import Optional
 def list_versions(
         db: Session,
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
-        task_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
+        task_uid: Optional[str] = None,
         vnum: Optional[int] = None,
         status: Optional[str] = None,
         created_by: Optional[str] = None,
@@ -21,11 +21,11 @@ def list_versions(
     if uid:
         stmt = stmt.where(Version.uid == uid)
 
-    if project_id:
-        stmt = stmt.where(Version.project_id == project_id)
+    if project_uid:
+        stmt = stmt.where(Version.project_uid == project_uid)
 
-    if task_id:
-        stmt = stmt.where(Version.task_id == task_id)
+    if task_uid:
+        stmt = stmt.where(Version.task_id == task_uid)
 
     if vnum is not None:
         stmt = stmt.where(Version.vnum == vnum)

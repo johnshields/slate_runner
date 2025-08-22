@@ -11,11 +11,11 @@ router = APIRouter()
 @router.get("/events", response_model=list[schemas.EventOut])
 def get_events(
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         kind: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
     """List or search Events"""
-    return service.list_events(db, uid, project_id, kind, limit, offset)
+    return service.list_events(db, uid, project_uid, kind, limit, offset)

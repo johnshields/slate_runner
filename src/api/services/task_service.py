@@ -8,7 +8,7 @@ from typing import Optional
 def list_tasks(
         db: Session,
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
         parent_type: Optional[str] = None,
         parent_id: Optional[str] = None,
         name: Optional[str] = None,
@@ -22,14 +22,14 @@ def list_tasks(
     if uid:
         stmt = stmt.where(Task.uid == uid)
 
-    if project_id:
-        stmt = stmt.where(Task.project_id == project_id)
+    if project_uid:
+        stmt = stmt.where(Task.project_uid == project_uid)
 
     if parent_type:
         stmt = stmt.where(Task.parent_type == parent_type)
 
     if parent_id:
-        stmt = stmt.where(Task.parent_id == parent_id)
+        stmt = stmt.where(Task.parent_uid == parent_id)
 
     if name:
         stmt = stmt.where(Task.name.ilike(f"%{name}%"))

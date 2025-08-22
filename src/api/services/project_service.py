@@ -28,11 +28,7 @@ def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
 
 # Update a project by UID or name
 def update_project(db: Session, identifier: str, data: ProjectUpdate) -> ProjectOut:
-    stmt = select(Project).where((Project.uid == identifier) | (Project.name == identifier))
-    project = db.scalar(stmt)
-
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    project = utils.db_lookup(db, Project, identifier)
 
     if data.name:
         project.name = data.name
@@ -44,11 +40,7 @@ def update_project(db: Session, identifier: str, data: ProjectUpdate) -> Project
 
 # Delete a project by UID or name
 def delete_project(db: Session, identifier: str) -> dict:
-    stmt = select(Project).where((Project.uid == identifier) | (Project.name == identifier))
-    project = db.scalar(stmt)
-
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    project = utils.db_lookup(db, Project, identifier)
 
     db.delete(project)
     db.commit()
@@ -76,16 +68,14 @@ def list_projects(
 
 
 # Get basic counts and info for a single project
-def list_project_overview(db: Session, project_id: str) -> ProjectOverviewOut:
-    project = db.scalar(select(Project).where(Project.uid == project_id))
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+def list_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
+    project = utils.db_lookup(db, Project, project_uid)
 
     # Count shots and tasks for the project
-    shots_count = db.scalar(select(func.count()).select_from(Shot).where(Shot.project_id == project_id))
+    shots_count = db.scalar(select(func.count()).select_from(Shot).where(Shot.project_uid == project_uid))
     tasks_count = db.scalar(
         select(func.count()).select_from(Task).where(
-            Task.project_id == project_id,
+            Task.project_uid == project_uid,
             Task.parent_type == "shot"
         )
     )
@@ -101,25 +91,25 @@ def list_project_overview(db: Session, project_id: str) -> ProjectOverviewOut:
 # Get all assets belonging to a project
 def list_project_assets(
         db: Session,
-        project_id: str
+        project_uid: str
 ):
-    utils.db_lookup(db, Project, project_id)
+    utils.db_lookup(db, Project, project_uid)
 
-    stmt = select(Asset).where(Asset.project_id == project_id).order_by(Asset.name.asc())
+    stmt = select(Asset).where(Asset.project_uid == project_uid).order_by(Asset.name.asc())
     return db.execute(stmt).scalars().all()
 
 
 # Get all shots in a project, with optional filtering by seq, shot, or frame range
 def list_project_shots(
         db: Session,
-        project_id: str,
+        project_uid: str,
         seq: str = None,
         shot: str = None,
         range: str = None
 ):
-    utils.db_lookup(db, Project, project_id)
+    utils.db_lookup(db, Project, project_uid)
 
-    stmt = select(Shot).where(Shot.project_id == project_id)
+    stmt = select(Shot).where(Shot.project_uid == project_uid)
     if seq:
         stmt = stmt.where(Shot.seq == seq)
     if shot:
@@ -138,13 +128,13 @@ def list_project_shots(
 # Get all tasks for a project, with optional filters for parent_type and status
 def list_project_tasks(
         db: Session,
-        project_id: str,
+        project_uid: str,
         parent_type: Optional[str] = None,
         status: Optional[str] = None,
 ):
-    utils.db_lookup(db, Project, project_id)
+    utils.db_lookup(db, Project, project_uid)
 
-    stmt = select(Task).where(Task.project_id == project_id)
+    stmt = select(Task).where(Task.project_uid == project_uid)
     if parent_type:
         stmt = stmt.where(Task.parent_type == parent_type)
 
@@ -157,13 +147,13 @@ def list_project_tasks(
 # Get all publishes for a project, optionally filtered by type and representation
 def list_project_publishes(
         db: Session,
-        project_id: str,
+        project_uid: str,
         type: str = None,
         rep: str = None
 ):
-    utils.db_lookup(db, Project, project_id)
+    utils.db_lookup(db, Project, project_uid)
 
-    stmt = select(Publish).where(Publish.project_id == project_id)
+    stmt = select(Publish).where(Publish.project_uid == project_uid)
     if type:
         stmt = stmt.where(Publish.type == type)
     if rep:

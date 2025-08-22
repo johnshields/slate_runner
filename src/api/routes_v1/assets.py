@@ -40,6 +40,7 @@ def delete_asset(
 @router.get("/assets", response_model=list[schemas.AssetOut])
 def get_assets(
         uid: Optional[str] = None,
+        project_uid: Optional[str] = None,
         name: Optional[str] = None,
         type: Optional[str] = None,
         limit: int = 100,
@@ -47,7 +48,7 @@ def get_assets(
         db: Session = Depends(get_db)
 ):
     """List or search Shots with optional filters"""
-    return service.list_assets(db, uid, name, type, limit, offset)
+    return service.list_assets(db, uid, project_uid, name, type, limit, offset)
 
 
 @router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.TaskOut])

@@ -28,7 +28,7 @@ INSERT INTO projects (uid, name) VALUES
   ('PROJ_OPP3NH', 'Oppenheimer');
 
 -- Assets
-INSERT INTO assets (uid, project_id, name, type) VALUES
+INSERT INTO assets (uid, project_uid, name, type) VALUES
   ('ASSET_HEPTA1', 'PROJ_ARR1VL', 'HeptapodShip',     'Vehicle'),
   ('ASSET_KSP1NN', 'PROJ_BL4DER', 'KSpinner',         'Vehicle'),
   ('ASSET_X3N0MO', 'PROJ_AL13N5', 'Xenomorph',        'Creature'),
@@ -41,7 +41,7 @@ INSERT INTO assets (uid, project_id, name, type) VALUES
   ('ASSET_DEBR15', 'PROJ_GR4VIT', 'DebrisField',      'Environment');
 
 -- Shots
-INSERT INTO shots (uid, project_id, seq, shot, frame_in, frame_out, fps, colorspace) VALUES
+INSERT INTO shots (uid, project_uid, seq, shot, frame_in, frame_out, fps, colorspace) VALUES
   ('SHOT_ARR010', 'PROJ_ARR1VL', 'SEQ01', 'SHOTN_010', 1001, 1060, 24.000, 'sRGB'),
   ('SHOT_BLD020', 'PROJ_BL4DER', 'SEQ02', 'SHOTN_020', 2001, 2080, 24.000, 'sRGB'),
   ('SHOT_ALN030', 'PROJ_AL13N5', 'SEQ03', 'SHOTN_030', 3001, 3050, 24.000, 'sRGB'),
@@ -54,7 +54,7 @@ INSERT INTO shots (uid, project_id, seq, shot, frame_in, frame_out, fps, colorsp
   ('SHOT_GRN100', 'PROJ_GR33NK', 'SEQ02', 'SHOTN_100', 10001, 10080, 24.000, 'sRGB');
 
 -- Tasks
-INSERT INTO tasks (uid, parent_type, parent_id, name, assignee, status, project_id) VALUES
+INSERT INTO tasks (uid, parent_type, parent_uid, name, assignee, status, project_uid) VALUES
   ('TASK_MD1ALN', 'asset', 'ASSET_HEPTA1', 'Modeling',     'j.doe',    'WIP',   'PROJ_ARR1VL'),
   ('TASK_RG1XEN', 'asset', 'ASSET_X3N0MO', 'Rigging',      'a.lee',    'READY', 'PROJ_AL13N5'),
   ('TASK_CP1ALN', 'shot',  'SHOT_ALN030',  'Compositing',  'g.lucas',   'WIP',   'PROJ_AL13N5'),
@@ -67,7 +67,7 @@ INSERT INTO tasks (uid, parent_type, parent_id, name, assignee, status, project_
   ('TASK_TX1NEY', 'asset', 'ASSET_NEYT1R', 'TexturePaint', 's.riley',   'WIP',   'PROJ_AV4TAR');
 
 -- Versions
-INSERT INTO versions (uid, project_id, task_id, vnum, status, created_by, created_at) VALUES
+INSERT INTO versions (uid, project_uid, task_uid, vnum, status, created_by, created_at) VALUES
   ('VER_ALN001', 'PROJ_AL13N5', 'TASK_MD1ALN', 1, 'draft',    'j.doe', random_time(30)),
   ('VER_XEN001', 'PROJ_AL13N5', 'TASK_RG1XEN', 1, 'review',   'a.lee', random_time(30)),
   ('VER_ALN002', 'PROJ_AL13N5', 'TASK_CP1ALN', 1, 'approved', 'g.lucas', random_time(30)),
@@ -80,7 +80,7 @@ INSERT INTO versions (uid, project_id, task_id, vnum, status, created_by, create
   ('VER_NEY001', 'PROJ_AV4TAR', 'TASK_TX1NEY', 1, 'draft',    's.riley', random_time(30));
 
 -- Publishes (one-line rows, shorter metadata for PUB_ALN002)
-INSERT INTO publishes (uid, project_id, version_id, type, representation, path, metadata, created_at) VALUES
+INSERT INTO publishes (uid, project_uid, version_uid, type, representation, path, metadata, created_at) VALUES
   ('PUB_ALN001','PROJ_ARR1VL','VER_ALN001','geo','usd','/assets/heptapod_ship/v001/heptapod.usd','{"software":"Houdini 20.0.653","submitted_by":"j.doe","department":"Model","usd_kind":"component","purpose":"render"}'::jsonb,random_time(30)),
   ('PUB_XEN001','PROJ_AL13N5','VER_XEN001','rig','abc','/assets/xenomorph/v001/xeno_rig.abc','{"software":"Maya 2024.2","submitted_by":"a.lee","department":"Rigging","joints":125,"ctrls":210}'::jsonb,random_time(30)),
   ('PUB_ALN002','PROJ_AL13N5','VER_ALN002','comp','exr','/shots/alien/shot030/v001/final_comp.exr','{"software":"Nuke 14.1v4","submitted_by":"g.lucas","department":"Comp","res":"2048x858"}'::jsonb,random_time(30)),
@@ -93,7 +93,7 @@ INSERT INTO publishes (uid, project_id, version_id, type, representation, path, 
   ('PUB_NEY001','PROJ_AV4TAR','VER_NEY001','tex','png','/assets/avatar/neytiri/v001/skin_diff.png','{"software":"SubstancePainter 9.1","submitted_by":"s.riley","department":"Texture","res":"8k UDIM"}'::jsonb,random_time(30));
 
 -- Render Jobs
-INSERT INTO render_jobs (project_id, version_id, context, adapter, status, logs, submitted_at, created_at) VALUES
+INSERT INTO render_jobs (project_uid, version_uid, context, adapter, status, logs, submitted_at, created_at) VALUES
   ('PROJ_AL13N5', 'VER_ALN001', '{"shot":"SHOT_ALN030","task":"TASK_MD1ALN","frames":"1001-1060","priority":50}'::jsonb, 'tractor', 'queued', 'Queued by j.doe', random_time(30), random_time(30)),
   ('PROJ_AL13N5', 'VER_XEN001', '{"asset":"ASSET_X3N0MO","task":"TASK_RG1XEN","notes":"Rig test"}'::jsonb, 'deadline', 'running', 'Started worker ip-10-0-1-23', random_time(30), random_time(30)),
   ('PROJ_AL13N5', 'VER_ALN002', '{"shot":"SHOT_ALN030","task":"TASK_CP1ALN","pass":"final_comp"}'::jsonb, 'tractor', 'succeeded', 'All frames complete', random_time(30), random_time(30)),
@@ -104,7 +104,7 @@ INSERT INTO render_jobs (project_id, version_id, context, adapter, status, logs,
   ('PROJ_AV4TAR', 'VER_NEY001', '{"asset":"ASSET_NEYT1R","task":"TASK_TX1NEY","map":"skin_diffuse"}'::jsonb, 'tractor', 'succeeded', 'Texture bake done', random_time(30), random_time(30));
 
 -- Events
-INSERT INTO events (project_id, kind, payload, created_at, updated_at) VALUES
+INSERT INTO events (project_uid, kind, payload, created_at, updated_at) VALUES
   ('PROJ_AL13N5', 'render.submitted', '{"version":"VER_ALN001","task":"TASK_MD1ALN","adapter":"tractor"}'::jsonb, random_time(30), now()),
   ('PROJ_AL13N5', 'render.started', '{"version":"VER_XEN001","task":"TASK_RG1XEN","adapter":"deadline"}'::jsonb, random_time(30), now()),
   ('PROJ_AL13N5', 'publish.created', '{"publish":"PUB_ALN002","version":"VER_ALN002","type":"comp"}'::jsonb, random_time(30), now()),
@@ -116,21 +116,26 @@ INSERT INTO events (project_id, kind, payload, created_at, updated_at) VALUES
   ('PROJ_ARR1VL', 'publish.created', '{"publish":"PUB_ALN001","version":"VER_ALN001","type":"geo"}'::jsonb, random_time(30), now()),
   ('PROJ_OPP3NH', 'publish.created', '{"publish":"PUB_OPP001","version":"VER_OPP001","type":"fx"}'::jsonb, random_time(30), now());
 
+  -- Versions whose project doesn't match their task's project
+SELECT v.uid, v.project_uid AS v_proj, t.project_uid AS t_proj, v.task_uid
+FROM versions v
+JOIN tasks t ON t.uid = v.task_uid
+WHERE v.project_uid <> t.project_uid;
 
--- Make the version live on Arrival
-UPDATE versions
-SET project_id = 'PROJ_ARR1VL'
-WHERE uid = 'VER_ALN001';
+-- Publishes whose project doesn't match their version's project
+SELECT p.uid, p.project_uid AS p_proj, v.project_uid AS v_proj, p.version_uid
+FROM publishes p
+JOIN versions v ON v.uid = p.version_uid
+WHERE p.project_uid <> v.project_uid;
 
--- Align render_jobs for that version with the correct project
-UPDATE render_jobs
-SET project_id = 'PROJ_ARR1VL'
-WHERE version_id = 'VER_ALN001';
+-- Render jobs whose project doesn't match their version's project
+SELECT r.version_uid, r.project_uid AS r_proj, v.project_uid AS v_proj
+FROM render_jobs r
+JOIN versions v ON v.uid = r.version_uid
+WHERE r.project_uid <> v.project_uid;
 
--- Fix the mismatched events that reference VER_ALN001 under the Alien project
-UPDATE events
-SET project_id = 'PROJ_ARR1VL'
-WHERE project_id = 'PROJ_AL13N5'
-  AND payload->>'version' = 'VER_ALN001';
-
-
+-- Events carrying a version in payload that doesn't match the event's project
+SELECT e.project_uid AS event_proj, e.kind, e.payload
+FROM events e
+JOIN versions v ON v.uid = e.payload->>'version'
+WHERE e.project_uid <> v.project_uid;

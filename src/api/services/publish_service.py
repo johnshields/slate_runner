@@ -8,8 +8,8 @@ from typing import Optional
 def list_publishes(
         db: Session,
         uid: Optional[str] = None,
-        project_id: Optional[str] = None,
-        version_id: Optional[str] = None,
+        project_uid: Optional[str] = None,
+        version_uid: Optional[str] = None,
         type: Optional[str] = None,
         representation: Optional[str] = None,
         path: Optional[str] = None,
@@ -21,11 +21,11 @@ def list_publishes(
     if uid:
         stmt = stmt.where(Publish.uid == uid)
 
-    if project_id:
-        stmt = stmt.where(Publish.project_id == project_id)
+    if project_uid:
+        stmt = stmt.where(Publish.project_uid == project_uid)
 
-    if version_id:
-        stmt = stmt.where(Publish.version_id == version_id)
+    if version_uid:
+        stmt = stmt.where(Publish.version_uid == version_uid)
 
     if type:
         stmt = stmt.where(Publish.type == type)
