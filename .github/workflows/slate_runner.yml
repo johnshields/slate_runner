@@ -67,8 +67,7 @@ jobs:
       - name: Health check API
         run: |
           set -e
-          curl -fsS "http://$API_HOST:$API_PORT/api/healthz" \
-            || curl -fsS "http://$API_HOST:$API_PORT/"
+          curl -fsS "http://$API_HOST:$API_PORT/api/healthz" || curl -fsS "http://$API_HOST:$API_PORT/"
 
       - name: Run tests
         run: |

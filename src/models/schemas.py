@@ -74,12 +74,21 @@ class ShotOut(BaseModel):
 
 class ShotCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    uid: Optional[str] = None
     project_id: str
     seq: str
     shot: str
     frame_in: int
     frame_out: int
+    fps: Optional[float] = None
+    colorspace: Optional[str] = None
+
+
+class ShotUpdate(BaseModel):
+    project_id: Optional[str] = None
+    seq: Optional[str] = None
+    shot: Optional[str] = None
+    frame_in: Optional[int] = None
+    frame_out: Optional[int] = None
     fps: Optional[float] = None
     colorspace: Optional[str] = None
 

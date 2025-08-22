@@ -13,7 +13,7 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     # check if project exists
     project = db.scalar(select(Project).where(Project.uid == data.project_id))
     if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail=f"Project '{data.project_id}' not found")
 
     # Check if asset with same name already exists in this project
     if db.scalar(select(Asset).where(Asset.project_id == data.project_id, Asset.name == data.name)):
@@ -39,11 +39,11 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
     asset = db.scalar(stmt)
 
     if not asset:
-        raise HTTPException(status_code=404, detail="Asset not found")
+        raise HTTPException(status_code=404, detail=f"Asset '{identifier}' not found")
 
     # Optionally update project association if project_uid is provided
-    if data.project_uid:
-        project = db.scalar(select(Project).where(Project.uid == data.project_uid))
+    if data.project_id:
+        project = db.scalar(select(Project).where(Project.uid == data.project_id))
         if not project:
             raise HTTPException(status_code=404, detail="Target project not found")
         asset.project_id = project.uid
@@ -62,12 +62,12 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
 # Delete an asset by UID or name
 def delete_asset(db: Session, identifier: str) -> dict:
     stmt = select(Asset).where((Asset.uid == identifier) | (Asset.name == identifier))
-    project = db.scalar(stmt)
+    asset = db.scalar(stmt)
 
-    if not project:
-        raise HTTPException(status_code=404, detail="Asset not found")
+    if not asset:
+        raise HTTPException(status_code=404, detail=f"Asset '{identifier}' not found")
 
-    db.delete(project)
+    db.delete(asset)
     db.commit()
     return {"detail": f"Asset '{identifier}' deleted successfully"}
 

@@ -4,7 +4,7 @@ from sqlalchemy import select
 from models.models import Shot, Project
 from typing import Optional
 
-from models.schemas import ShotOut, ShotCreate
+from models.schemas import ShotOut, ShotCreate, ShotUpdate
 from utils import utils
 
 
@@ -13,7 +13,7 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
     # check if project exists
     project = db.scalar(select(Project).where(Project.uid == data.project_id))
     if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+        raise HTTPException(status_code=404, detail=f"Project '{data.project_id}' not found")
 
     # Create and persist shot
     uid = data.uid or utils.generate_uid("SHOT")
@@ -32,6 +32,54 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
     db.refresh(new_shot)
 
     return new_shot
+
+
+# Update a shot by UID
+def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
+    # Find shot by UID
+    stmt = select(Shot).where((Shot.uid == uid))
+    shot = db.scalar(stmt)
+
+    if not shot:
+        raise HTTPException(status_code=404, detail=f"Shot '{uid}' not found")
+
+    # Optionally update project association if project_uid is provided
+    if data.project_id:
+        project = db.scalar(select(Project).where(Project.uid == data.project_id))
+        if not project:
+            raise HTTPException(status_code=404, detail="Target project not found")
+        shot.project_id = project.uid
+
+    # Update other fields if provided
+    if data.shot:
+        shot.shot = data.shot
+    if data.seq:
+        shot.seq = data.seq
+    if data.frame_in:
+        shot.frame_in = data.frame_in
+    if data.frame_out:
+        shot.frame_out = data.frame_out
+    if data.fps:
+        shot.fps = data.fps
+    if data.colorspace:
+        shot.colorspace = data.colorspace
+
+    db.commit()
+    db.refresh(shot)
+    return shot
+
+
+# Delete a shot by UID
+def delete_shot(db: Session, uid: str) -> dict:
+    stmt = select(Shot).where((Shot.uid == uid))
+    shot = db.scalar(stmt)
+
+    if not shot:
+        raise HTTPException(status_code=404, detail=f"Shot '{uid}' not found")
+
+    db.delete(shot)
+    db.commit()
+    return {"detail": f"Shot '{uid}' deleted successfully"}
 
 
 # Get a list of tasks versions, with optional filtering
