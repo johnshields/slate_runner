@@ -46,7 +46,7 @@ class AssetOut(BaseModel):
 
 class AssetCreate(BaseModel):
     uid: Optional[str] = None
-    project_uid: str
+    project_id: str
     name: str
     type: Optional[str] = None
 
@@ -61,7 +61,7 @@ class AssetUpdate(BaseModel):
 class ShotOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     uid: str
-    project_id: str
+    project_id: Optional[str] = None
     seq: str
     shot: str
     frame_in: int
@@ -70,6 +70,18 @@ class ShotOut(BaseModel):
     colorspace: Optional[str] = None
     created_at: datetime
     updated_at: datetime
+
+
+class ShotCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    uid: Optional[str] = None
+    project_id: str
+    seq: str
+    shot: str
+    frame_in: int
+    frame_out: int
+    fps: Optional[float] = None
+    colorspace: Optional[str] = None
 
 
 # Task schemas
@@ -105,7 +117,7 @@ class PublishOut(BaseModel):
     uid: str
     project_id: Optional[str] = None
     version_id: str
-    type: Optional[float] = None
+    type: Optional[str] = None
     representation: Optional[str] = None
     path: str
     meta: dict

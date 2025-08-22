@@ -8,6 +8,15 @@ import models.schemas as schemas
 router = APIRouter()
 
 
+@router.post("/shots", response_model=schemas.ShotOut, status_code=201)
+def post_shot(
+        data: schemas.ShotCreate,
+        db: Session = Depends(get_db)
+):
+    """Create a new Shot"""
+    return service.create_shot(db, data)
+
+
 @router.get("/shots", response_model=list[schemas.ShotOut])
 def get_shots(
         uid: Optional[str] = None,

@@ -1,7 +1,7 @@
 # slate_runner 🎬🐍
 RESTful FastAPI for fixing it in post.
 
-#### Run service:
+## Run service:
 ```bash
 $ git clone https://github.com/johnshields/slate_runner.git
 $ cd slate_runner
@@ -24,5 +24,7 @@ DB_USER=user.hash
 DB_PASSWORD=password
 DB_SSLMODE=require
 ```
+
+#### SQL script located here [sql/schema.sql](sql/schema.sql)
 
 ---

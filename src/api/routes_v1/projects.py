@@ -4,6 +4,7 @@ from typing import Optional
 from db.db import get_db
 import api.services.project_service as service
 import models.schemas as schemas
+from enums.enums import PublishType, Representation, ParentType
 
 router = APIRouter()
 
@@ -86,7 +87,7 @@ def get_project_shots(
 @router.get("/projects/{project_uid}/tasks", response_model=list[schemas.TaskOut])
 def get_project_tasks(
         project_uid: str,
-        parent_type: Optional[str] = Query(None, regex="^(asset|shot)$"),
+        parent_type: Optional[ParentType] = Query(None),
         status: Optional[str] = None,
         db: Session = Depends(get_db),
 ):
@@ -97,8 +98,8 @@ def get_project_tasks(
 @router.get("/projects/{project_uid}/publishes", response_model=list[schemas.PublishOut])
 def get_project_publishes(
         project_uid: str,
-        type: Optional[str] = Query(None, regex="^(comp|geo)$"),
-        rep: Optional[str] = Query(None, regex="^(mov|exr)$"),
+        type: Optional[PublishType] = Query(None),
+        rep: Optional[Representation] = Query(None),
         db: Session = Depends(get_db)
 ):
     """Returns Project Publishes filtered by type and representation"""

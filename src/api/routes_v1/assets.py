@@ -10,7 +10,7 @@ router = APIRouter()
 
 
 @router.post("/assets", response_model=schemas.AssetOut, status_code=201)
-def create_asset(
+def post_asset(
         data: schemas.AssetCreate,
         db: Session = Depends(get_db)
 ):

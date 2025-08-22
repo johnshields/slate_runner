@@ -11,15 +11,15 @@ import utils.utils as utils
 # Create a new asset, generate a UID if not provided.
 def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     # check if project exists
-    project = db.scalar(select(Project).where(Project.uid == data.project_uid))
+    project = db.scalar(select(Project).where(Project.uid == data.project_id))
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
 
     # Check if asset with same name already exists in this project
-    if db.scalar(select(Asset).where(Asset.project_id == data.project_uid, Asset.name == data.name)):
+    if db.scalar(select(Asset).where(Asset.project_id == data.project_id, Asset.name == data.name)):
         raise HTTPException(
             status_code=409,
-            detail=f"Asset '{data.name}' already exists in project '{data.project_uid}'."
+            detail=f"Asset '{data.name}' already exists in project '{data.project_id}'."
         )
 
     # Create and persist asset
