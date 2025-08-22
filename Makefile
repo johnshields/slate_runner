@@ -13,7 +13,7 @@ run:
 	$(PYTHON) -m uvicorn src.main:app --host 127.0.0.1 --port 8049 --reload
 
 clean:
-	rm -rf $(VENV) __pycache__ */__pycache__
+	rm -rf $(VENV) **/__pycache__ .pytest_cache .mypy_cache .coverage htmlcov
 
 freeze:
 	$(PIP) freeze > requirements.txt

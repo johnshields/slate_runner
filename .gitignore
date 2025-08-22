@@ -1,92 +1,64 @@
-# Project
+# Project-specific
 works/
-src/db/db_seed.py
 *.ps1
 
-# OS
-.DS_Store
-.AppleDouble
-.LSOverride
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-*~
+# Environments & config
+.env
+.env.*
+alembic.ini
 
-# Python
+# Python cache/compiled files
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.pyc
-*.pyd
-.Python
-alembic.ini
-.env
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 *.egg
 *.egg-info/
 .eggs/
-pip-wheel-metadata/
+*.manifest
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Packaging / build
 dist/
 build/
 develop-eggs/
 .installed.cfg
-*.manifest
-*.spec
+pip-wheel-metadata/
+
+# Test / coverage
 .mypy_cache/
 .dmypy.json
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+test-results/
+reports/
 
-# C / C++
-*.o
-*.obj
-*.so
-*.dll
-*.dylib
-*.exe
-*.out
-*.app
-*.i
-*.ii
-*.s
-*.su
-*.idb
-*.pdb
-*.mod
-*.cmd
-*.d
-*.lib
-*.a
-*.la
-*.lo
-*.def
-*.exp
-
-# Bash / Shell
+# Logs / temp files
 *.log
 *.tmp
 *.swp
 
-# Test artifacts
-test-results/
-reports/
-
-# Docker
-.dockerignore
-docker-compose.override.yml
-*~
-
-# IDE
+# IDE / editor
 .vscode/
 .idea/
 *.iml
 
-# Miscellaneous
-*.bak
-*.old
+# OS-generated junk
+.DS_Store
+Thumbs.db
+Desktop.ini
+*~
+
+# Docker
+docker-compose.override.yml
+.dockerignore
