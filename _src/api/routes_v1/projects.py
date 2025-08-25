@@ -33,7 +33,7 @@ def delete_project(
         identifier: str,
         db: Session = Depends(get_db),
 ):
-    """Delete a Project by UID or Name"""
+    """Delete a Project by UID or Name."""
     return service.delete_project(db, identifier)
 
 
@@ -45,7 +45,7 @@ def get_projects(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Projects by UID or name"""
+    """List or search Projects by UID or name."""
     return service.list_projects(db, uid, name, limit, offset)
 
 
@@ -54,7 +54,7 @@ def project_overview(
         project_uid: str,
         db: Session = Depends(get_db)
 ):
-    """List Project overview by UID"""
+    """List Project overview by UID."""
     return service.list_project_overview(db, project_uid=project_uid)
 
 
@@ -63,7 +63,7 @@ def get_project_assets(
         project_uid: str,
         db: Session = Depends(get_db)
 ):
-    """Returns all Assets for a Project"""
+    """Returns all Assets for a Project."""
     assets = service.list_project_assets(db, project_uid)
     return assets
 
@@ -91,7 +91,7 @@ def get_project_tasks(
         status: Optional[str] = None,
         db: Session = Depends(get_db),
 ):
-    """Returns Project Tasks filtered by parent_type and status"""
+    """Returns Project Tasks filtered by parent_type and status."""
     return service.list_project_tasks(db, project_uid, parent_type, status)
 
 
@@ -102,5 +102,5 @@ def get_project_publishes(
         rep: Optional[Representation] = Query(None),
         db: Session = Depends(get_db)
 ):
-    """Returns Project Publishes filtered by type and representation"""
+    """Returns Project Publishes filtered by type and representation."""
     return service.list_project_publishes(db, project_uid, type, rep)

@@ -17,5 +17,5 @@ def get_events(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Events"""
+    """List or search Events."""
     return service.list_events(db, uid, project_uid, kind, limit, offset)

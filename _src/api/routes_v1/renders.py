@@ -18,5 +18,5 @@ def get_render_jobs(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Render Jobs with optional filters"""
+    """List or search Render Jobs with optional filters."""
     return service.list_render_jobs(db, uid, project_uid, adapter, status, limit, offset)

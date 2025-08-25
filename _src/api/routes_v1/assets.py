@@ -24,7 +24,7 @@ def patch_asset(
         data: schemas.AssetUpdate,
         db: Session = Depends(get_db),
 ):
-    """Update an Asset by UID or Name"""
+    """Update an Asset by UID or Name."""
     return service.update_asset(db, identifier, data)
 
 
@@ -33,7 +33,7 @@ def delete_asset(
         identifier: str,
         db: Session = Depends(get_db),
 ):
-    """Delete an Asset by UID or Name"""
+    """Delete an Asset by UID or Name."""
     return service.delete_asset(db, identifier)
 
 
@@ -47,7 +47,7 @@ def get_assets(
         offset: int = 0,
         db: Session = Depends(get_db)
 ):
-    """List or search Shots with optional filters"""
+    """List or search Shots with optional filters."""
     return service.list_assets(db, uid, project_uid, name, type, limit, offset)
 
 
@@ -56,5 +56,5 @@ def get_asset_tasks(
         asset_uid: str,
         db: Session = Depends(get_db)
 ):
-    """Returns all Tasks for an Asset"""
+    """Returns all Tasks for an Asset."""
     return service.list_asset_tasks(db, asset_uid)

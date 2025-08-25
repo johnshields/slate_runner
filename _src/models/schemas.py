@@ -1,5 +1,5 @@
 ﻿from datetime import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Literal
 from pydantic import BaseModel, ConfigDict
 
 
@@ -106,6 +106,25 @@ class TaskOut(BaseModel):
     status: str
     created_at: datetime
     updated_at: datetime
+
+
+class TaskCreate(BaseModel):
+    uid: Optional[str] = None
+    project_uid: str
+    parent_type: Optional[Literal["asset", "shot"]] = None
+    parent_uid: Optional[str] = None
+    name: str
+    assignee: Optional[str] = None
+    status: Optional[str] = "WIP"
+
+
+class TaskUpdate(BaseModel):
+    project_uid: Optional[str] = None
+    parent_type: Optional[Literal["asset", "shot"]] = None
+    parent_uid: Optional[str] = None
+    name: Optional[str] = None
+    assignee: Optional[str] = None
+    status: Optional[str] = None
 
 
 # Version schemas

@@ -20,5 +20,5 @@ def get_publishes(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Publishes with optional filters"""
+    """List or search Publishes with optional filters."""
     return service.list_publishes(db, uid, project_uid, version_id, type, representation, path, limit, offset)

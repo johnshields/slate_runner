@@ -17,7 +17,7 @@ def status_payload(app: FastAPI) -> dict:
         "api_version": "v1",
         "timestamp": now.isoformat(),
         "uptime_seconds": int(uptime_seconds),
-        "message": "RESTful API for fixing it in post.",
+        "message": "RESTful FastAPI for fixing it in post.",
     }
 
 

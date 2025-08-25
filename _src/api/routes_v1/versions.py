@@ -20,5 +20,5 @@ def get_versions(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Versions with optional filters"""
+    """List or search Versions with optional filters."""
     return service.list_versions(db, uid, project_uid, task_id, vnum, status, created_by, limit, offset)

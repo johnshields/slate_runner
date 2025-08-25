@@ -13,7 +13,7 @@ def post_shot(
         data: schemas.ShotCreate,
         db: Session = Depends(get_db)
 ):
-    """Create a new Shot"""
+    """Create a new Shot."""
     return service.create_shot(db, data)
 
 
@@ -23,7 +23,7 @@ def patch_shot(
         data: schemas.ShotUpdate,
         db: Session = Depends(get_db),
 ):
-    """Update a shot by UID"""
+    """Update a shot by UID."""
     return service.update_shot(db, shot_uid, data)
 
 
@@ -32,7 +32,7 @@ def delete_shot(
         shot_uid: str,
         db: Session = Depends(get_db),
 ):
-    """Delete an Asset by UID"""
+    """Delete an Asset by UID."""
     return service.delete_shot(db, shot_uid)
 
 
@@ -45,5 +45,5 @@ def get_shots(
         offset: int = Query(0, ge=0),
         db: Session = Depends(get_db),
 ):
-    """List or search Shots with optional filters"""
+    """List or search Shots with optional filters."""
     return service.list_shots(db, uid, project_uid, shot, limit, offset)
