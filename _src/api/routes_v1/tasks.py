@@ -13,7 +13,7 @@ def post_task(
         data: schemas.TaskCreate,
         db: Session = Depends(get_db),
 ):
-    """Create a new Task."""
+    """Create a new Task - auto creates a version."""
     return service.create_task(db, data)
 
 

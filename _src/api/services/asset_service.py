@@ -45,6 +45,7 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
     # Update other fields if provided
     if data.name:
         asset.name = data.name
+
     if data.type:
         asset.type = data.type
 

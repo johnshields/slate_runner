@@ -1,5 +1,5 @@
-﻿from http.client import HTTPException
-
+﻿from fastapi import HTTPException
+from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from models.models import Task, Version, Project
@@ -8,9 +8,12 @@ from typing import Optional
 from models.schemas import TaskCreate, TaskUpdate, TaskOut
 from utils import utils
 
+TASK_DEFAULT_STATUS = "WIP"
+VERSION_DEFAULT_STATUS = "draft"
 
-# Create a new task, generate a UID if not provided.
-def create_task(db: Session, data: TaskCreate) -> TaskOut:
+
+# Create a new task, generate a UID if not provided, and auto-create Version v1.
+def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None) -> TaskOut:
     # check if project exists
     project = utils.db_lookup(db, Project, data.project_uid)
 
@@ -23,18 +26,62 @@ def create_task(db: Session, data: TaskCreate) -> TaskOut:
         parent_uid=data.parent_uid,
         name=data.name,
         assignee=data.assignee,
-        status=data.status or "WIP",
+        status=data.status or TASK_DEFAULT_STATUS,
     )
-    db.add(new_task)
+
+    try:
+        # Flush to validate task constraints
+        db.add(new_task)
+        db.flush()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Task violates a database constraint") from e
+
+    try:
+        # Auto-create initial version (v1) for the task (defaults to 'draft')
+        create_task_version(
+            db,
+            task=new_task,
+            status=VERSION_DEFAULT_STATUS,
+            created_by=created_by or new_task.assignee,
+            vnum=1,
+        )
+        # Flush to validate version constraints only
+        db.flush()
+    except IntegrityError as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to create initial version") from e
+
+    # Commit both task and version atomically
     db.commit()
     db.refresh(new_task)
-
     return new_task
 
 
-# Update a task by UID (UID-only lookups)
+# Helper: create a version for a given task (defaults to 'draft', v1 unless overridden).
+def create_task_version(
+        db: Session,
+        *,
+        task: Task,
+        status: str = VERSION_DEFAULT_STATUS,
+        created_by: str | None = None,
+        vnum: int = 1,
+) -> Version:
+    ver = Version(
+        uid=utils.generate_uid("VER"),
+        project_uid=task.project_uid,
+        task_uid=task.uid,
+        vnum=vnum,
+        status=status,
+        created_by=created_by,
+    )
+    db.add(ver)
+    return ver
+
+
+# Update a task by UID
 def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
-    # Find task by UID only
+    # Find task by UID
     task = utils.db_lookup(db, Task, uid)
 
     # Optionally update project association if project_uid is provided
@@ -47,12 +94,16 @@ def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
     # Update other fields if provided
     if data.parent_type is not None:
         task.parent_type = data.parent_type
+
     if data.parent_uid is not None:
         task.parent_uid = data.parent_uid
+
     if data.name is not None:
         task.name = data.name
+
     if data.assignee is not None:
         task.assignee = data.assignee
+
     if data.status is not None:
         task.status = data.status
 

@@ -47,14 +47,19 @@ def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
     # Update other fields if provided
     if data.shot:
         shot.shot = data.shot
+
     if data.seq:
         shot.seq = data.seq
+
     if data.frame_in:
         shot.frame_in = data.frame_in
+
     if data.frame_out:
         shot.frame_out = data.frame_out
+
     if data.fps:
         shot.fps = data.fps
+
     if data.colorspace:
         shot.colorspace = data.colorspace
 

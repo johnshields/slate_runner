@@ -112,8 +112,10 @@ def list_project_shots(
     stmt = select(Shot).where(Shot.project_uid == project_uid)
     if seq:
         stmt = stmt.where(Shot.seq == seq)
+
     if shot:
         stmt = stmt.where(Shot.shot == shot)
+
     if range:
         try:
             start, end = map(int, range.split("-"))
@@ -156,6 +158,7 @@ def list_project_publishes(
     stmt = select(Publish).where(Publish.project_uid == project_uid)
     if type:
         stmt = stmt.where(Publish.type == type)
+
     if rep:
         stmt = stmt.where(Publish.representation == rep)
 
