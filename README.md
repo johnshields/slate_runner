@@ -8,7 +8,7 @@ $ cd slate_runner
 $ python -m venv .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
-$ python -m uvicorn main:app --app-dir _src --host 127.0.0.1 --port 8049
+$ python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8049
 ```
 
 #### .env example:
@@ -27,6 +27,6 @@ DB_PASSWORD=password
 DB_SSLMODE=require
 ```
 
-#### SQL script located here [sql/schema.sql](sql/schema.sql)
+#### SQL script located here [sql/schema.sql](works/sql/schema.sql)
 
 ---

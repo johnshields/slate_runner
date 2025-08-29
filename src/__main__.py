@@ -8,5 +8,5 @@ if __name__ == "__main__":
         port=settings.API_PORT,
         reload=True,
         log_level=settings.LOG_LEVEL,
-        app_dir="_src",
+        app_dir="src",
     )

@@ -23,7 +23,7 @@ jobs:
       API_HOST: 127.0.0.1
       API_PORT: 8000
       LOG_LEVEL: info
-      PYTHONPATH: _src
+      PYTHONPATH: src
       DB_HOST: localhost
       DB_PORT: 5432
       DB_NAME: dummy_db
@@ -51,15 +51,15 @@ jobs:
 
       - name: Lint (flake8 strict)
         run: |
-          flake8 _src --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 src --count --select=E9,F63,F7,F82 --show-source --statistics
 
       - name: Lint (flake8 full)
         run: |
-          flake8 _src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          flake8 src --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
       - name: Start FastAPI (background)
         run: |
-          python -m uvicorn _src.main:app --host "$API_HOST" --port "$API_PORT" --log-level "$LOG_LEVEL" > uvicorn.log 2>&1 &
+          python -m uvicorn src.main:app --host "$API_HOST" --port "$API_PORT" --log-level "$LOG_LEVEL" > uvicorn.log 2>&1 &
           echo $! > uvicorn.pid
           sleep 3
           tail -n +1 uvicorn.log || true

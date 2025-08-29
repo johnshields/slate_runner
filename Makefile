@@ -10,7 +10,7 @@ install: venv
 	$(PIP) install -r requirements.txt
 
 run:
-	$(PYTHON) -m uvicorn _src.main:app --host 127.0.0.1 --port 8049 --reload
+	$(PYTHON) -m uvicorn src.main:app --host 127.0.0.1 --port 8049 --reload
 
 clean:
 	rm -rf $(VENV) **/__pycache__ .pytest_cache .mypy_cache .coverage htmlcov

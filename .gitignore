@@ -1,5 +1,6 @@
 # Project-specific
-works/
+works/*.txt
+works/*.md
 *.ps1
 
 # Environments & config

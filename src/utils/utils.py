@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from _src.config import settings
+from src.config import settings
 
 
 # Build db url for Supabase session pooler
