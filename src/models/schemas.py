@@ -1,6 +1,7 @@
 ﻿from datetime import datetime
 from typing import Optional, Dict, Any, Literal
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+import re
 
 
 # Project schemas
@@ -13,8 +14,23 @@ class ProjectOut(BaseModel):
 
 
 class ProjectCreate(BaseModel):
-    uid: Optional[str] = None
-    name: str
+    uid: Optional[str] = Field(None, min_length=1, max_length=50)
+    name: str = Field(..., min_length=1, max_length=100, description="Project name")
+
+    @field_validator('name')
+    def validate_name(cls, v):
+        if not v or not v.strip():
+            raise ValueError('Project name cannot be empty')
+        # Remove extra whitespace
+        return v.strip()
+
+    @field_validator('uid')
+    def validate_uid(cls, v):
+        if v is not None:
+            # UID should match pattern: PREFIX_XXXXXX
+            if not re.match(r'^[A-Z]+_[A-Z0-9]{6}$', v):
+                raise ValueError('UID must match pattern: PREFIX_XXXXXX (e.g., PROJ_ABC123)')
+        return v
 
 
 class ProjectUpdate(BaseModel):
@@ -74,14 +90,27 @@ class ShotOut(BaseModel):
 
 class ShotCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
-    uid: Optional[str] = None
-    project_uid: str
-    seq: str
-    shot: str
-    frame_in: int
-    frame_out: int
-    fps: Optional[float] = None
-    colorspace: Optional[str] = None
+    uid: Optional[str] = Field(None, min_length=1, max_length=50)
+    project_uid: str = Field(..., min_length=1, max_length=50)
+    seq: str = Field(..., min_length=1, max_length=20, description="Sequence identifier")
+    shot: str = Field(..., min_length=1, max_length=20, description="Shot identifier")
+    frame_in: int = Field(..., ge=0, description="Start frame number")
+    frame_out: int = Field(..., ge=0, description="End frame number")
+    fps: Optional[float] = Field(None, ge=1.0, le=120.0, description="Frames per second")
+    colorspace: Optional[str] = Field(None, max_length=50, description="Color space")
+
+    @field_validator('frame_out')
+    def validate_frame_range(cls, v, values):
+        if 'frame_in' in values and v <= values['frame_in']:
+            raise ValueError('frame_out must be greater than frame_in')
+        return v
+
+    @field_validator('seq', 'shot')
+    def validate_identifiers(cls, v):
+        if not re.match(r'^[A-Z0-9_]+$', v):
+            raise ValueError(
+                'Sequence and shot identifiers must contain only uppercase letters, numbers, and underscores')
+        return v
 
 
 class ShotUpdate(BaseModel):
