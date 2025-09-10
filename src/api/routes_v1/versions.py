@@ -8,6 +8,16 @@ import models.schemas as schemas
 router = APIRouter()
 
 
+@router.post("/versions", response_model=schemas.VersionOut, status_code=201)
+def post_version(
+        data: schemas.VersionCreate,
+        db: Session = Depends(get_db),
+        publish: bool = Query(default=False, description="Also create an initial publish"),
+):
+    """Create a new Version - optionally auto creates a publish."""
+    return service.create_version(db, data, publish=publish)
+
+
 @router.get("/versions", response_model=list[schemas.VersionOut])
 def get_versions(
         uid: Optional[str] = None,

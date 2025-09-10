@@ -169,6 +169,17 @@ class VersionOut(BaseModel):
     updated_at: datetime
 
 
+class VersionCreate(BaseModel):
+    project_uid: str
+    task_uid: str
+    vnum: Optional[int] = None
+    status: Optional[str] = None
+    publish_type: Optional[str] = None
+    representation: Optional[str] = None
+    path: Optional[str] = None
+    meta: Optional[dict] = {}
+
+
 # Publish schemas
 class PublishOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)

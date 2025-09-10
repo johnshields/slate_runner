@@ -27,7 +27,7 @@ class HealthChecker:
         results = {
             "status": "healthy",
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "version": "0.0.1",
+            "version": settings.VERSION,
             "environment": settings.ENVIRONMENT,
             "checks": {}
         }
