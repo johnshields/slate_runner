@@ -20,7 +20,7 @@ LOG_LEVEL=info
 
 # auth
 API_USERNAME=user
-API_TOKEN=super-secret-token
+API_TOKEN=super-secret-token # moved to db
 SECRET_KEY=super-secret-key
 
 # supabase pooler
@@ -32,6 +32,6 @@ DB_PASSWORD=password
 DB_SSLMODE=require
 ```
 
-#### SQL script located here [sql/schema.sql](works/sql/schema.sql)
+#### SQL script located here [sql/001_schema.sql](works/sql/001_schema.sql)
 
 ---
