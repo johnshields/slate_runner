@@ -2,8 +2,8 @@ from datetime import datetime, timezone
 from typing import Dict, Any, List
 from sqlalchemy import text
 from db.db import engine
-from config import settings
-from logging_config import get_logger
+from app.config import settings
+from app.logging_config import get_logger
 
 logger = get_logger(__name__)
 

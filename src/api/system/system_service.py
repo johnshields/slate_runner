@@ -1,7 +1,7 @@
 ﻿from fastapi import FastAPI
 from datetime import datetime, timezone
 from sqlalchemy import text
-from config import settings
+from app.config import settings
 from db.db import engine
 
 

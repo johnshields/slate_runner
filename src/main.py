@@ -8,13 +8,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy import text
 from starlette.templating import Jinja2Templates
-from config import settings
+from app.config import settings
 from api import router as api_router
 from api.routes_v1 import router as v1_router
 from db.db import engine
-from logging_config import setup_logging, get_logger
-from exceptions import handle_slate_runner_exception, SlateRunnerException
-from middleware import RateLimitMiddleware, SecurityHeadersMiddleware, RequestLoggingMiddleware
+from app.logging_config import setup_logging, get_logger
+from app.exceptions import handle_slate_runner_exception, SlateRunnerException
+from app.middleware import RateLimitMiddleware, SecurityHeadersMiddleware, RequestLoggingMiddleware
 
 
 @asynccontextmanager

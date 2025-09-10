@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 from typing import Literal
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path.cwd()
 
 
 class Settings(BaseSettings):

@@ -1,7 +1,7 @@
 ﻿from fastapi import APIRouter, Request, Depends
-from api.service import status_payload, db_conn
+from api.system.system_service import status_payload, db_conn
 from api.dependencies.auth import require_token, is_authenticated
-from health import get_health_status
+from api.system.health_checker import get_health_status
 
 router = APIRouter()
 

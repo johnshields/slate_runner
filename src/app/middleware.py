@@ -1,10 +1,9 @@
 import time
-from typing import Dict, Tuple
+from typing import Dict
 from fastapi import Request, HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import Response
-from config import settings
-from logging_config import get_logger
+from app.config import settings
+from app.logging_config import get_logger
 
 logger = get_logger(__name__)
 

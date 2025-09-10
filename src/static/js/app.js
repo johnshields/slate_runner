@@ -1,4 +1,4 @@
-﻿// Uptime Badge
+﻿// Uptime Badge updater
 async function syncUptime() {
     try {
         const response = await fetch('/api');
@@ -13,17 +13,7 @@ async function syncUptime() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    syncUptime();                   // load once
-    setInterval(syncUptime, 5000);  // keep synced
-});
-
-// Helper: get token from storage
-function getToken() {
-    return localStorage.getItem("api_token");
-}
-
-// JSON Highlighter
+// JSON syntax highlighter for endpoint responses
 function syntaxHighlight(json) {
     if (typeof json !== 'string') {
         json = JSON.stringify(json, null, 2);
@@ -45,7 +35,7 @@ function syntaxHighlight(json) {
     );
 }
 
-// Endpoint Status Loader
+// Generic endpoint status loader
 async function showEndpointStatus(endpoint, resultId, headerId) {
     const resultDiv = document.getElementById(resultId);
     const header = document.getElementById(headerId);
@@ -66,12 +56,18 @@ async function showEndpointStatus(endpoint, resultId, headerId) {
 }
 
 // Shortcuts for each endpoint
-const showApiStatus    = () => showEndpointStatus('/api',       'api-result',   'api-header');
-const showHealthStatus = () => showEndpointStatus('/api/healthz','health-result','health-header');
-const showReadyStatus  = () => showEndpointStatus('/api/readyz', 'ready-result', 'ready-header');
+const showApiStatus    = () => showEndpointStatus('/api',        'api-result',   'api-header');
+const showHealthStatus = () => showEndpointStatus('/api/healthz', 'health-result','health-header');
+const showReadyStatus  = () => showEndpointStatus('/api/readyz',  'ready-result', 'ready-header');
 
-// Toggle sections
+// Toggle expand/collapse for sections
 function toggleSection(id) {
     const el = document.getElementById(id);
     el.style.display = (el.style.display === 'none') ? 'block' : 'none';
 }
+
+// Run uptime once on load, then refresh every 30 seconds
+document.addEventListener('DOMContentLoaded', () => {
+    syncUptime();
+    setInterval(syncUptime, 30000);
+});

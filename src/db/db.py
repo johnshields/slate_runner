@@ -2,8 +2,8 @@
 from sqlalchemy.orm import sessionmaker
 from typing import Generator
 from utils.utils import build_database_url
-from config import settings
-from logging_config import get_logger
+from app.config import settings
+from app.logging_config import get_logger
 
 logger = get_logger(__name__)
 

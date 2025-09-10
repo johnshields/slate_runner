@@ -1,7 +1,7 @@
 import logging
 import sys
 from pathlib import Path
-from config import settings
+from app.config import settings
 
 # Create logs directory if it doesn't exist
 LOGS_DIR = Path(__file__).parent.parent / "logs"
