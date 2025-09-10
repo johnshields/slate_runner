@@ -1,6 +1,6 @@
 ﻿from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models.models import RenderJob
+from models.render import RenderJob
 from typing import Optional
 
 

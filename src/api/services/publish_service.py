@@ -1,6 +1,6 @@
 ﻿from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models.models import Publish
+from models.publish import Publish
 from typing import Optional
 
 

@@ -1,7 +1,11 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
-from models.models import Project, Asset, Shot, Task, Publish
+from models.publish import Publish
+from models.task import Task
+from models.shot import Shot
+from models.asset import Asset
+from models.project import Project
 from typing import Optional
 from schemas.project import ProjectOut, ProjectCreate, ProjectUpdate, ProjectOverviewOut
 import utils.utils as utils

@@ -2,7 +2,9 @@
 from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models.models import Task, Version, Project
+from models.version import Version
+from models.task import Task
+from models.project import Project
 from typing import Optional
 
 from schemas.task import TaskOut, TaskCreate, TaskUpdate

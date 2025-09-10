@@ -1,6 +1,6 @@
 ﻿from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models.models import Event
+from models.event import Event
 from typing import Optional
 
 

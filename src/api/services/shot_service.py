@@ -1,7 +1,8 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from models.models import Shot, Project
+from models.shot import Shot
+from models.project import Project
 from typing import Optional
 
 from schemas.shot import ShotCreate, ShotUpdate, ShotOut
