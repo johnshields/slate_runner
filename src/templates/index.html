@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <title>slate_runner_api</title>
+</head>
+<body>
+<div class="header-with-badges">
+    <h1>slate_runner_api</h1>
+    <div class="badges">
+        <span class="badge">v0.0.1</span>
+        <span class="badge">ENV: dev</span>
+        <span class="badge" id="uptime-badge">Uptime: --</span>
+    </div>
+</div>
+
+<p><strong>RESTful FastAPI for fixing it in post.</strong></p>
+<p>See <a href="/docs" target="_blank">/docs</a> for API documentation.</p>
+
+<h2>Health Check Endpoints</h2>
+<p><a href="#" onclick="showApiStatus(); return false;">/api</a> - API information and status</p>
+<p><a href="#" onclick="showHealthStatus(); return false;">/api/healthz</a> - Basic health check</p>
+<p><a href="#" onclick="showReadyStatus(); return false;">/api/readyz</a> - Basic readiness check</p>
+
+<h3 id="api-header" class="hidden-header">API Status Results</h3>
+<div id="api-result" class="result"></div>
+
+<h3 id="health-header" class="hidden-header">Health Check Results</h3>
+<div id="health-result" class="result"></div>
+
+<h3 id="ready-header" class="hidden-header">Readiness Check Results</h3>
+<div id="ready-result" class="result"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -7,6 +7,8 @@ from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from sqlalchemy import text
+from starlette.templating import Jinja2Templates
+
 from config import settings
 from api import router as api_router
 from api.routes_v1 import router as v1_router
@@ -65,23 +67,12 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
+
     # Root endpoint
     @api.get("/", response_class=HTMLResponse, tags=["root"])
-    def root():
-        return """
-        <html>
-          <head>
-            <link rel="icon" href="/favicon.ico" type="image/x-icon">
-            <title>slate_runner</title>
-          </head>
-          <body style="font-family: ui-sans-serif, system-ui">
-            <h1>slate_runner</h1>
-            <p><strong>RESTful FastAPI for fixing it in post.</strong></p>
-            <p>See <a href="/api/">/api/</a> for status or <a href="/docs">/docs</a> for OpenAPI.</p>
-            <p>See <a href="https://kntn.ly/a573c361" target="_blank">GitHub Repo</a></p>
-          </body>
-        </html>
-        """
+    def root(request: Request):
+        return templates.TemplateResponse("index.html", {"request": request})
 
     # Favicon route
     @api.get("/favicon.ico", include_in_schema=False)
