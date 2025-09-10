@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from typing import Dict, Any, List
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 from db.db import engine
 from config import settings
 from logging_config import get_logger
@@ -160,22 +159,3 @@ health_checker.add_check("memory", check_memory, critical=False)
 def get_health_status() -> Dict[str, Any]:
     """Get comprehensive health status"""
     return health_checker.run_checks()
-
-
-def get_simple_health() -> Dict[str, Any]:
-    """Get simple health status for basic monitoring"""
-    try:
-        # Just check database connectivity
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-
-        return {
-            "status": "healthy",
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }
-    except Exception as e:
-        return {
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        }

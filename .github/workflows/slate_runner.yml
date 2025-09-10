@@ -24,11 +24,21 @@ jobs:
       API_PORT: 8049
       LOG_LEVEL: info
       PYTHONPATH: src
-      DB_HOST: localhost
-      DB_PORT: 5432
-      DB_NAME: dummy_db
-      DB_USER: dummy_user
-      DB_PASSWORD: dummy_pass
+
+      # Database config (from secrets)
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      # Security (from secrets)
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      API_USERNAME: ${{ secrets.API_USERNAME }}
+      API_TOKEN: ${{ secrets.API_TOKEN }}
+
+      # Ensure CI-only flags are respected
+      CI: true
 
     steps:
       - name: Checkout code
@@ -59,14 +69,15 @@ jobs:
 
       - name: Start FastAPI (background)
         run: |
-          python -m uvicorn src.main:app --host "$API_HOST" --port "$API_PORT" --log-level "$LOG_LEVEL" > uvicorn.log 2>&1 &
+          python -m uvicorn main:app --app-dir src --host "$API_HOST" --port "$API_PORT" --log-level "$LOG_LEVEL" > uvicorn.log 2>&1 &
           echo $! > uvicorn.pid
-          sleep 3
-          tail -n +1 uvicorn.log || true
+          sleep 5
+          cat uvicorn.log || true
 
       - name: Health check API
         run: |
           set -e
+          cat uvicorn.log || true
           curl -fsS "http://$API_HOST:$API_PORT/api/healthz" || curl -fsS "http://$API_HOST:$API_PORT/"
 
       - name: Run tests

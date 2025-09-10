@@ -9,6 +9,10 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 
 class Settings(BaseSettings):
     # API Configuration
+    SERVICE: str = "slate_runner_api"
+    DESC: str = "RESTful FastAPI for fixing it in post."
+    VERSION: str = "0.0.1"
+    API_VERSION: str = "v1"
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8049
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
@@ -28,9 +32,11 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
 
-    # Security
-    SECRET_KEY: str = "your-secret-key-change-in-production"
+    # auth
+    SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    API_USERNAME: str = "admin"
+    API_TOKEN: str
 
     # CORS
     CORS_ORIGINS: list[str] = ["*"]

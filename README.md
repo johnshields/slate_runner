@@ -18,6 +18,11 @@ API_HOST=0.0.0.0
 API_PORT=8049
 LOG_LEVEL=info
 
+# auth
+API_USERNAME=user
+API_TOKEN=super-secret-token
+SECRET_KEY=super-secret-key
+
 # supabase pooler
 DB_HOST=localhost
 DB_PORT=5432

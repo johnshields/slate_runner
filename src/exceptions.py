@@ -46,7 +46,7 @@ def create_http_exception(
         message: str,
         details: Optional[Dict[str, Any]] = None
 ) -> HTTPException:
-    """Create a standardized HTTP exception"""
+    """Create a standardised HTTP exception"""
     return HTTPException(
         status_code=status_code,
         detail={

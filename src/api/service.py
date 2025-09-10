@@ -1,7 +1,7 @@
 ﻿from fastapi import FastAPI
 from datetime import datetime, timezone
 from sqlalchemy import text
-
+from config import settings
 from db.db import engine
 
 
@@ -12,12 +12,12 @@ def status_payload(app: FastAPI) -> dict:
 
     return {
         "ok": True,
-        "service": "slate_runner_api",
-        "version": app.version if hasattr(app, "version") else "0.0.1",
-        "api_version": "v1",
-        "timestamp": now.isoformat(),
+        "service": getattr(app, "title"),
+        "version": getattr(app, "version"),
+        "api_version": settings.API_VERSION,
         "uptime_seconds": int(uptime_seconds),
-        "message": "RESTful FastAPI for fixing it in post.",
+        "message": getattr(app, "description"),
+        "timestamp": now.isoformat()
     }
 
 

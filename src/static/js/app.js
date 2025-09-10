@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(syncUptime, 5000);  // keep synced
 });
 
+// Helper: get token from storage
+function getToken() {
+    return localStorage.getItem("api_token");
+}
+
 // JSON Highlighter
 function syntaxHighlight(json) {
     if (typeof json !== 'string') {

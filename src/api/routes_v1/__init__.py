@@ -1,4 +1,4 @@
-﻿from fastapi import APIRouter
+﻿from fastapi import APIRouter, Depends
 from .projects import router as projects
 from .assets import router as assets
 from .shots import router as shots
@@ -7,8 +7,10 @@ from .versions import router as versions
 from .publishes import router as publishes
 from .renders import router as renders
 from .events import router as events
+from ..dependencies.auth import require_token
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(require_token)])
+
 router.include_router(projects, tags=["projects"])
 router.include_router(assets, tags=["assets"])
 router.include_router(shots, tags=["shots"])

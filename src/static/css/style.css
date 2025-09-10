@@ -23,7 +23,7 @@ h1, h2, h3 {
 .header-with-badges {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 .header-with-badges h1 {

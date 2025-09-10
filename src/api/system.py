@@ -1,5 +1,7 @@
-﻿from fastapi import APIRouter, Request
+﻿from fastapi import APIRouter, Request, Depends
 from api.service import status_payload, db_conn
+from api.dependencies.auth import require_token, is_authenticated
+from health import get_health_status
 
 router = APIRouter()
 
@@ -10,13 +12,27 @@ def api_root(request: Request):
     return status_payload(request.app)
 
 
+@router.get("/authz", summary="Auth status")
+def authz(request: Request):
+    """Check whether the caller is authenticated."""
+    return is_authenticated(request)
+
+
 @router.get("/healthz", summary="Liveness")
-def healthz():
-    """Health endpoint."""
+def healthz(request: Request):
+    """Health endpoint.
+    - If caller is authenticated -> return full health status
+    - If caller is not authenticated -> return minimal liveness
+    """
+    auth = is_authenticated(request)
+
+    if auth.get("user_authenticated"):
+        return get_health_status()
+
     return {"ok": True}
 
 
-@router.get("/readyz", summary="Readiness")
+@router.get("/readyz", summary="Readiness", dependencies=[Depends(require_token)])
 def readyz():
     """Check DB readiness."""
     return db_conn()
