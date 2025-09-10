@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from models.models import Project, Asset, Shot, Task, Publish
 from typing import Optional
-from models.schemas import ProjectOverviewOut, ProjectCreate, ProjectOut, ProjectUpdate
+from schemas.project import ProjectOut, ProjectCreate, ProjectUpdate, ProjectOverviewOut
 import utils.utils as utils
 
 

@@ -3,24 +3,25 @@ from sqlalchemy.orm import Session
 from typing import Optional, List
 from db.db import get_db
 import api.services.task_service as service
-import models.schemas as schemas
+import schemas.task
+import schemas.version
 
 router = APIRouter()
 
 
-@router.post("/tasks", response_model=schemas.TaskOut, status_code=201)
+@router.post("/tasks", response_model=schemas.task.TaskOut, status_code=201)
 def post_task(
-        data: schemas.TaskCreate,
+        data: schemas.task.TaskCreate,
         db: Session = Depends(get_db),
 ):
     """Create a new Task - auto creates a version."""
     return service.create_task(db, data)
 
 
-@router.patch("/tasks/{uid}", response_model=schemas.TaskOut)
+@router.patch("/tasks/{uid}", response_model=schemas.task.TaskOut)
 def patch_task(
         uid: str,
-        data: schemas.TaskUpdate,
+        data: schemas.task.TaskUpdate,
         db: Session = Depends(get_db),
 ):
     """Update a Task by UID."""
@@ -36,7 +37,7 @@ def delete_task(
     return service.delete_task(db, uid)
 
 
-@router.get("/tasks", response_model=list[schemas.TaskOut])
+@router.get("/tasks", response_model=list[schemas.task.TaskOut])
 def get_tasks(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -53,7 +54,7 @@ def get_tasks(
     return service.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset)
 
 
-@router.get("/tasks/{task_uid}/versions", response_model=List[schemas.VersionOut])
+@router.get("/tasks/{task_uid}/versions", response_model=List[schemas.version.VersionOut])
 def get_task_versions(
         task_uid: str,
         db: Session = Depends(get_db),

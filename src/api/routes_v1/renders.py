@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.render_service as service
-import models.schemas as schemas
+import schemas.render
 
 router = APIRouter()
 
 
-@router.get("/renders", response_model=list[schemas.RenderJobOut])
+@router.get("/renders", response_model=list[schemas.render.RenderJobOut])
 def get_render_jobs(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

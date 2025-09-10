@@ -3,24 +3,25 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db.db import get_db
 import api.services.asset_service as service
-import models.schemas as schemas
+import schemas.asset
+import schemas.task
 
 router = APIRouter()
 
 
-@router.post("/assets", response_model=schemas.AssetOut, status_code=201)
+@router.post("/assets", response_model=schemas.asset.AssetOut, status_code=201)
 def post_asset(
-        data: schemas.AssetCreate,
+        data: schemas.asset.AssetCreate,
         db: Session = Depends(get_db)
 ):
     """Create a new Asset"""
     return service.create_asset(db, data)
 
 
-@router.patch("/assets/{identifier}", response_model=schemas.AssetOut)
+@router.patch("/assets/{identifier}", response_model=schemas.asset.AssetOut)
 def patch_asset(
         identifier: str,
-        data: schemas.AssetUpdate,
+        data: schemas.asset.AssetUpdate,
         db: Session = Depends(get_db),
 ):
     """Update an Asset by UID or Name."""
@@ -36,7 +37,7 @@ def delete_asset(
     return service.delete_asset(db, identifier)
 
 
-@router.get("/assets", response_model=list[schemas.AssetOut])
+@router.get("/assets", response_model=list[schemas.asset.AssetOut])
 def get_assets(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -50,7 +51,7 @@ def get_assets(
     return service.list_assets(db, uid, project_uid, name, type, limit, offset)
 
 
-@router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.TaskOut])
+@router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.task.TaskOut])
 def get_asset_tasks(
         asset_uid: str,
         db: Session = Depends(get_db)

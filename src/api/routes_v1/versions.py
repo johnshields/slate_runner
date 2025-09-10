@@ -3,14 +3,14 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.version_service as service
-import models.schemas as schemas
+import schemas.version
 
 router = APIRouter()
 
 
-@router.post("/versions", response_model=schemas.VersionOut, status_code=201)
+@router.post("/versions", response_model=schemas.version.VersionOut, status_code=201)
 def post_version(
-        data: schemas.VersionCreate,
+        data: schemas.version.VersionCreate,
         db: Session = Depends(get_db),
         publish: bool = Query(default=False, description="Also create an initial publish"),
 ):
@@ -18,7 +18,7 @@ def post_version(
     return service.create_version(db, data, publish=publish)
 
 
-@router.get("/versions", response_model=list[schemas.VersionOut])
+@router.get("/versions", response_model=list[schemas.version.VersionOut])
 def get_versions(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.event_service as service
-import models.schemas as schemas
+import schemas.event
 
 router = APIRouter()
 
 
-@router.get("/events", response_model=list[schemas.EventOut])
+@router.get("/events", response_model=list[schemas.event.EventOut])
 def get_events(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

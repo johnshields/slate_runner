@@ -5,7 +5,7 @@ from sqlalchemy import select
 from models.models import Task, Version, Project
 from typing import Optional
 
-from models.schemas import TaskCreate, TaskUpdate, TaskOut
+from schemas.task import TaskOut, TaskCreate, TaskUpdate
 from utils import utils
 
 TASK_DEFAULT_STATUS = "WIP"

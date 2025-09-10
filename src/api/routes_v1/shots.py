@@ -3,24 +3,24 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.shot_service as service
-import models.schemas as schemas
+import schemas.shot
 
 router = APIRouter()
 
 
-@router.post("/shots", response_model=schemas.ShotOut, status_code=201)
+@router.post("/shots", response_model=schemas.shot.ShotOut, status_code=201)
 def post_shot(
-        data: schemas.ShotCreate,
+        data: schemas.shot.ShotCreate,
         db: Session = Depends(get_db)
 ):
     """Create a new Shot."""
     return service.create_shot(db, data)
 
 
-@router.patch("/shots/{shot_uid}", response_model=schemas.ShotOut)
+@router.patch("/shots/{shot_uid}", response_model=schemas.shot.ShotOut)
 def patch_shot(
         shot_uid: str,
-        data: schemas.ShotUpdate,
+        data: schemas.shot.ShotUpdate,
         db: Session = Depends(get_db),
 ):
     """Update a shot by UID."""
@@ -36,7 +36,7 @@ def delete_shot(
     return service.delete_shot(db, shot_uid)
 
 
-@router.get("/shots", response_model=list[schemas.ShotOut])
+@router.get("/shots", response_model=list[schemas.shot.ShotOut])
 def get_shots(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

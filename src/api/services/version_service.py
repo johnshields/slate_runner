@@ -3,7 +3,7 @@ from sqlalchemy import select, func
 from typing import Optional
 from api.services.task_service import VERSION_DEFAULT_STATUS
 from models.models import Version, Publish, Task, Project
-from models.schemas import VersionOut, VersionCreate
+from schemas.version import VersionOut, VersionCreate
 from utils import utils
 
 

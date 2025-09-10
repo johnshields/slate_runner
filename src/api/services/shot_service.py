@@ -4,7 +4,7 @@ from sqlalchemy import select
 from models.models import Shot, Project
 from typing import Optional
 
-from models.schemas import ShotOut, ShotCreate, ShotUpdate
+from schemas.shot import ShotCreate, ShotUpdate, ShotOut
 from utils import utils
 
 

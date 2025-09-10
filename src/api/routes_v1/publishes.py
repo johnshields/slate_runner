@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 import api.services.publish_service as service
-import models.schemas as schemas
+import schemas.publish
 
 router = APIRouter()
 
 
-@router.get("/publishes", response_model=list[schemas.PublishOut])
+@router.get("/publishes", response_model=list[schemas.publish.PublishOut])
 def get_publishes(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

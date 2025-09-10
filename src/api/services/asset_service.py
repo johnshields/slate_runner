@@ -1,10 +1,10 @@
 ﻿from typing import Optional
-
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from models.models import Asset, Project, Task
-from models.schemas import AssetCreate, AssetOut, AssetUpdate, TaskOut
+from schemas.task import TaskOut
+from schemas.asset import AssetOut, AssetCreate, AssetUpdate
 import utils.utils as utils
 
 
