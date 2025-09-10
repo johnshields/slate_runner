@@ -4,7 +4,7 @@ from pathlib import Path
 from app.config import settings
 
 # Create logs directory if it doesn't exist
-LOGS_DIR = Path(__file__).parent.parent / "logs"
+LOGS_DIR = Path(__file__).parent.parent.parent / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 
 
