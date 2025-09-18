@@ -3,12 +3,26 @@ RESTful FastAPI for fixing it in post.
 
 ## Run service:
 ```bash
-$ git clone https://github.com/johnshields/slate_runner.git
-$ cd slate_runner
-$ python -m venv .venv
-$ source .venv/bin/activate
-$ pip install -r requirements.txt
-$ python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8049
+# 1. Get Python 3.13+ first (https://www.python.org/downloads/)
+
+# 2. Clone the project
+git clone https://github.com/johnshields/slate_runner.git
+cd slate_runner
+
+# 3. Create a virtual environment
+python -m venv .venv
+
+# 4. Activate the venv
+source .venv/bin/activate        # macOS / Linux
+# .venv\Scripts\activate         # Windows PowerShell
+
+# 5. Install everything you need
+pip install -e ".[dev]"
+
+# 6. Start the app!
+slate run
+
+# Type `slate --help` to see all available commands.
 ```
 
 #### .env example:

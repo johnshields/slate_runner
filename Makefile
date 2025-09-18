@@ -1,19 +1,16 @@
-﻿VENV := .venv
-PYTHON := $(VENV)/bin/python
-PIP := $(PYTHON) -m pip
-
-venv:
-	python -m venv $(VENV)
-	$(PIP) install --upgrade pip setuptools wheel
-
-install: venv
-	$(PIP) install -r requirements.txt
+﻿.PHONY: run install upgrade clean freeze lint
 
 run:
-	$(PYTHON) -m uvicorn src.main:app --host 127.0.0.1 --port 8049 --reload
+	slate run
+
+install:
+	slate install
+
+upgrade:
+	slate upgrade
 
 clean:
-	rm -rf $(VENV) **/__pycache__ .pytest_cache .mypy_cache .coverage htmlcov
+	slate clean
 
 freeze:
-	$(PIP) freeze > requirements.txt
+	slate freeze
