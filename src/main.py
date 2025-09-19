@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
-from sqlalchemy import text
 from starlette.templating import Jinja2Templates
 from app.config import settings
 from api import router as api_router

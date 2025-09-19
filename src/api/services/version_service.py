@@ -1,4 +1,5 @@
-﻿from sqlalchemy.orm import Session
+﻿from fastapi import HTTPException
+from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from typing import Optional
 from api.services.task_service import VERSION_DEFAULT_STATUS
@@ -6,7 +7,7 @@ from models.publish import Publish
 from models.version import Version
 from models.task import Task
 from models.project import Project
-from schemas.version import VersionOut, VersionCreate
+from schemas.version import VersionOut, VersionCreate, VersionUpdate
 from utils import utils
 
 
@@ -60,6 +61,44 @@ def create_version(
     return version
 
 
+# Update a version by UID
+def update_version(db: Session, uid: str, data: VersionUpdate) -> VersionOut:
+    # Find version by UID
+    version = utils.db_lookup(db, Version, uid)
+
+    # Optionally update project association if project_uid is provided
+    if data.project_uid:
+        project = db.scalar(select(Project).where(Project.uid == data.project_uid))
+        if not project:
+            raise HTTPException(status_code=404, detail="Target project not found")
+        version.project_uid = project.uid
+
+    # Optionally update task association if task_uid is provided
+    if data.task_uid:
+        task = db.scalar(select(Task).where(Task.uid == data.task_uid))
+        if not task:
+            raise HTTPException(status_code=404, detail="Target task not found")
+        version.task_uid = task.uid
+
+    # Update other fields if provided
+    if data.status is not None:
+        version.status = data.status
+
+    if data.created_by is not None:
+        version.created_by = data.created_by
+
+    db.commit()
+    db.refresh(version)
+    return version
+
+
+def delete_version(db: Session, uid: str) -> dict:
+    version = utils.db_lookup(db, Version, uid)
+    db.delete(version)
+    db.commit()
+    return {"detail": f"Version '{uid}' deleted successfully"}
+
+
 # Get a list of all versions, with optional filtering
 def list_versions(
         db: Session,
@@ -76,21 +115,16 @@ def list_versions(
 
     if uid:
         stmt = stmt.where(Version.uid == uid)
-
     if project_uid:
         stmt = stmt.where(Version.project_uid == project_uid)
-
     if task_uid:
-        stmt = stmt.where(Version.task_id == task_uid)
-
+        stmt = stmt.where(Version.task_uid == task_uid)
     if vnum is not None:
         stmt = stmt.where(Version.vnum == vnum)
-
     if status:
         stmt = stmt.where(Version.status == status)
-
     if created_by:
         stmt = stmt.where(Version.created_by == created_by)
 
     stmt = stmt.order_by(Version.created_at.desc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    return db.scalars(stmt).all()

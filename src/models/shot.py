@@ -1,10 +1,8 @@
 ﻿from datetime import datetime
 from typing import Optional
 from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-
-
-class Base(DeclarativeBase): pass
+from sqlalchemy.orm import Mapped, mapped_column
+from .base import Base
 
 
 class Shot(Base):

@@ -1,10 +1,9 @@
 ﻿from datetime import datetime
 from typing import Optional
-from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func, CheckConstraint
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-
-
-class Base(DeclarativeBase): pass
+from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func, CheckConstraint, Enum
+from sqlalchemy.orm import Mapped, mapped_column
+from .base import Base
+from enums.enums import ParentType, TaskStatus
 
 
 class Task(Base):
@@ -12,11 +11,10 @@ class Task(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     project_uid: Mapped[str] = mapped_column(ForeignKey("projects.uid", ondelete="CASCADE"), nullable=False)
-    parent_type: Mapped[str] = mapped_column(String, nullable=False)
+    parent_type: Mapped[ParentType] = mapped_column(Enum(ParentType), nullable=False)
     parent_uid: Mapped[str] = mapped_column(String, nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
     assignee: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    status: Mapped[str] = mapped_column(String, nullable=False, default="WIP")
+    status: Mapped[TaskStatus] = mapped_column(Enum(TaskStatus), nullable=False, default=TaskStatus.WIP)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
-    __table_args__ = (CheckConstraint("parent_type IN ('asset','shot')", name="ck_task_parent_type"),)

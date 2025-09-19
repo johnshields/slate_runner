@@ -1,7 +1,7 @@
 ﻿from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from enums.enums import AssetType
 
 
 class AssetOut(BaseModel):
@@ -9,7 +9,7 @@ class AssetOut(BaseModel):
     uid: str
     project_uid: Optional[str] = None
     name: str
-    type: Optional[str]
+    type: Optional[AssetType]
     created_at: datetime
     updated_at: datetime
 
@@ -18,7 +18,7 @@ class AssetCreate(BaseModel):
     uid: Optional[str] = None
     project_uid: str
     name: str = Field(..., min_length=1, max_length=100)
-    type: Optional[str] = None
+    type: Optional[AssetType] = None
 
     @field_validator("name")
     def validate_name(cls, v):
@@ -31,4 +31,4 @@ class AssetUpdate(BaseModel):
     uid: Optional[str] = None
     project_uid: Optional[str] = None
     name: Optional[str] = Field(None, min_length=1, max_length=100)
-    type: Optional[str] = None
+    type: Optional[AssetType] = None

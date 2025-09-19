@@ -1,5 +1,6 @@
 ﻿from enum import Enum
 
+
 class ParentType(str, Enum):
     asset = "asset"
     shot = "shot"
@@ -22,3 +23,32 @@ class Representation(str, Enum):
     vdb = "vdb"
     mov = "mov"
     png = "png"
+
+
+class VersionStatus(str, Enum):
+    draft = "draft"
+    review = "review"
+    approved = "approved"
+    rejected = "rejected"
+
+
+class TaskStatus(str, Enum):
+    WIP = "WIP"
+    READY = "READY"
+    HOLD = "HOLD"
+    DONE = "DONE"
+
+
+class RenderJobStatus(str, Enum):
+    queued = "queued"
+    running = "running"
+    succeeded = "succeeded"
+    failed = "failed"
+
+
+class AssetType(str, Enum):
+    vehicle = "Vehicle"
+    creature = "Creature"
+    character = "Character"
+    effect = "Effect"
+    environment = "Environment"

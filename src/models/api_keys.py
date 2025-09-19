@@ -1,9 +1,7 @@
 ﻿from datetime import datetime
 from sqlalchemy import Integer, String, Boolean, Text, TIMESTAMP, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-
-
-class Base(DeclarativeBase): pass
+from sqlalchemy.orm import Mapped, mapped_column
+from .base import Base
 
 
 class ApiKey(Base):

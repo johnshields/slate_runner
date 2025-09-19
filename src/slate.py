@@ -27,7 +27,7 @@ def main(ctx: typer.Context):
 @app.command()
 def run():
     """Run the FastAPI app using .env configuration (or defaults)."""
-    api_host = os.getenv("API_HOST", "127.0.0.1")
+    api_host = os.getenv("API_HOST", "0.0.0.0")
     api_port = os.getenv("API_PORT", "8049")
     service_name = os.getenv("SERVICE_NAME", "slate_runner_api")
     log_level = os.getenv("LOG_LEVEL", "INFO").lower()

@@ -1,7 +1,7 @@
 ﻿from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, ConfigDict, field_validator
+from enums.enums import VersionStatus
 
 
 class VersionOut(BaseModel):
@@ -10,7 +10,7 @@ class VersionOut(BaseModel):
     project_uid: Optional[str] = None
     task_uid: Optional[str] = None
     vnum: int
-    status: str
+    status: VersionStatus
     created_by: Optional[str] = None
     created_at: datetime
     updated_at: datetime
@@ -21,20 +21,16 @@ class VersionCreate(BaseModel):
     project_uid: str
     task_uid: str
     vnum: Optional[int] = None
-    status: Optional[str] = "draft"
+    status: Optional[VersionStatus] = VersionStatus.draft
     publish_type: Optional[str] = None
     representation: Optional[str] = None
     path: Optional[str] = None
     meta: Optional[dict] = {}
 
-    @field_validator("status")
-    def validate_status(cls, v):
-        if v and v.lower() not in {"draft", "wip", "approved", "final"}:
-            raise ValueError("Invalid version status")
-        return v
-
 
 class VersionUpdate(BaseModel):
     uid: Optional[str] = None
-    status: Optional[str] = None
+    project_uid: Optional[str] = None
+    task_uid: Optional[str] = None
+    status: Optional[VersionStatus] = None
     created_by: Optional[str] = None

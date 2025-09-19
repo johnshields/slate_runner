@@ -1,7 +1,7 @@
 ﻿from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, ConfigDict, field_validator
+from enums.enums import PublishType, Representation
 
 
 class PublishOut(BaseModel):
@@ -9,8 +9,8 @@ class PublishOut(BaseModel):
     uid: str
     project_uid: Optional[str] = None
     version_uid: Optional[str] = None
-    type: Optional[str] = None
-    representation: Optional[str] = None
+    type: Optional[PublishType] = None
+    representation: Optional[Representation] = None
     path: str
     meta: dict
     created_at: datetime
@@ -21,8 +21,8 @@ class PublishCreate(BaseModel):
     uid: Optional[str] = None
     project_uid: str
     version_uid: str
-    type: str
-    representation: Optional[str] = None
+    type: PublishType
+    representation: Optional[Representation] = None
     path: str
     meta: Optional[dict] = {}
 
@@ -35,7 +35,7 @@ class PublishCreate(BaseModel):
 
 class PublishUpdate(BaseModel):
     uid: Optional[str] = None
-    type: Optional[str] = None
-    representation: Optional[str] = None
+    type: Optional[PublishType] = None
+    representation: Optional[Representation] = None
     path: Optional[str] = None
     meta: Optional[dict] = None

@@ -1,9 +1,9 @@
 ﻿from datetime import datetime
-from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-
-
-class Base(DeclarativeBase): pass
+from typing import Optional
+from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func, UniqueConstraint, Enum
+from sqlalchemy.orm import Mapped, mapped_column
+from .base import Base
+from enums.enums import AssetType
 
 
 class Asset(Base):
@@ -12,7 +12,7 @@ class Asset(Base):
     uid: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     project_uid: Mapped[str] = mapped_column(ForeignKey("projects.uid", ondelete="CASCADE"), nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    type: Mapped[str] = mapped_column(String, nullable=False)
+    type: Mapped[Optional[AssetType]] = mapped_column(Enum(AssetType), nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     __table_args__ = (UniqueConstraint("project_uid", "name", name="uq_asset_project_name"),)
