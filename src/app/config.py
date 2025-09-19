@@ -2,7 +2,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pathlib import Path
 import os
-from typing import Literal
+from typing import Literal, Optional
 
 ROOT_DIR = Path.cwd()
 
@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     API_VERSION: str = "v1"
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8049
-    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "RESET"] = "INFO"
 
     # Environment
     ENVIRONMENT: Literal["development", "staging", "production"] = "development"
@@ -33,10 +33,10 @@ class Settings(BaseSettings):
     DB_MAX_OVERFLOW: int = 10
 
     # auth
-    SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     API_USERNAME: str = "admin"
-    API_TOKEN: str
+    API_TOKEN: Optional[str] = "token"
+    SECRET_KEY: Optional[str] = "secret"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # CORS
     CORS_ORIGINS: list[str] = ["*"]

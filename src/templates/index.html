@@ -20,20 +20,9 @@
 <p><strong>{{ description }}</strong></p>
 
 <p>See <a href="/docs" target="_blank">/docs</a> for API documentation.</p>
-
-<h2>Health Check Endpoints</h2>
-<p><a href="#" onclick="showApiStatus(); return false;">/api</a> - API information and status</p>
-<p><a href="#" onclick="showHealthStatus(); return false;">/api/healthz</a> - Basic health check</p>
-<p><a href="#" onclick="showReadyStatus(); return false;">/api/readyz</a> - Basic readiness check</p>
-
-<h3 id="api-header" class="hidden-header">API Status Results</h3>
+<p>See <a href="#" onclick="showApiStatus(); return false;">/api</a> - for API information and status.</p>
+<p id="api-header" class="hidden-header"></p>
 <div id="api-result" class="result"></div>
-
-<h3 id="health-header" class="hidden-header">Health Check Results</h3>
-<div id="health-result" class="result"></div>
-
-<h3 id="ready-header" class="hidden-header">Readiness Check Results</h3>
-<div id="ready-result" class="result"></div>
 
 <script src="/static/js/app.js"></script>
 </body>

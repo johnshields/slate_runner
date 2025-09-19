@@ -1,4 +1,4 @@
-﻿.PHONY: run install upgrade clean freeze lint
+﻿.PHONY: run install upgrade clean freeze
 
 run:
 	slate run

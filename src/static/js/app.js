@@ -55,10 +55,8 @@ async function showEndpointStatus(endpoint, resultId, headerId) {
     }
 }
 
-// Shortcuts for each endpoint
+// Shortcuts for /api endpoint
 const showApiStatus    = () => showEndpointStatus('/api',        'api-result',   'api-header');
-const showHealthStatus = () => showEndpointStatus('/api/healthz', 'health-result','health-header');
-const showReadyStatus  = () => showEndpointStatus('/api/readyz',  'ready-result', 'ready-header');
 
 // Toggle expand/collapse for sections
 function toggleSection(id) {

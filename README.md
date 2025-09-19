@@ -31,16 +31,17 @@ slate run
 API_HOST=0.0.0.0
 API_PORT=8049
 LOG_LEVEL=info
+SERVICE_NAME=slate_runner_api
 
 # auth
 API_USERNAME=user
-API_TOKEN=super-secret-token # moved to db
-SECRET_KEY=super-secret-key
+API_TOKEN=token
+SECRET_KEY=secret
 
 # supabase pooler
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=slate_runner
+DB_NAME=slate_db
 DB_USER=user.hash
 DB_PASSWORD=password
 DB_SSLMODE=require

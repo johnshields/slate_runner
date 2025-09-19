@@ -30,8 +30,7 @@ async def lifespan(api: FastAPI):
     # Get DB connection up and ready.
     try:
         with engine.connect() as conn:
-            ts = conn.execute(text("select now()")).scalar_one()
-            logger.info(f"database ready @ {ts.isoformat()}")
+            logger.info("database ready...")
     except Exception as e:
         logger.error(f"database connection failed on startup: {e}")
 

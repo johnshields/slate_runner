@@ -3,28 +3,45 @@ import sys
 from pathlib import Path
 from app.config import settings
 
-# Create logs directory if it doesn't exist
 LOGS_DIR = Path(__file__).parent.parent.parent / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
+
+# ANSI color codes
+COLORS = {
+    "debug": "\033[2m",  # green
+    "info": "\033[34m",  # blue
+    "warning": "\033[93m",  # yellow
+    "error": "\033[91m",  # red
+    "critical": "\033[1;91m",  # bold + red
+    "reset": "\033[0m"
+}
+
+
+class ColorFormatter(logging.Formatter):
+    """Formatter that lowercases levelname and adds colors."""
+
+    def format(self, record):
+        level = record.levelname.lower()
+        record.levelname = level
+        color = COLORS.get(level, COLORS["reset"])
+        message = super().format(record)
+        return f"{color}{message}{COLORS['reset']}"
 
 
 def setup_logging():
     """Configure application logging"""
 
-    # Create formatters
-    detailed_formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s'
+    detailed_formatter = ColorFormatter(
+        '[%(levelname)s] %(message)s @ %(asctime)s - %(name)s - %(filename)s:%(lineno)d'
     )
 
-    simple_formatter = logging.Formatter(
-        '%(levelname)s - %(message)s'
-    )
+    simple_formatter = ColorFormatter('%(levelname)s - %(message)s')
 
-    # Configure root logger
+    # Root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, settings.LOG_LEVEL))
 
-    # Clear existing handlers
+    # Clear old handlers
     root_logger.handlers.clear()
 
     # Console handler
@@ -33,16 +50,17 @@ def setup_logging():
     console_handler.setFormatter(simple_formatter if settings.is_production() else detailed_formatter)
     root_logger.addHandler(console_handler)
 
-    # File handler for application logs
+    file_formatter = logging.Formatter(
+        '[%(levelname)s] %(message)s @ %(asctime)s - %(name)s - %(filename)s:%(lineno)d'
+    )
     file_handler = logging.FileHandler(LOGS_DIR / "slate_runner.log")
     file_handler.setLevel(logging.INFO)
-    file_handler.setFormatter(detailed_formatter)
+    file_handler.setFormatter(file_formatter)
     root_logger.addHandler(file_handler)
 
-    # File handler for error logs
     error_handler = logging.FileHandler(LOGS_DIR / "errors.log")
     error_handler.setLevel(logging.ERROR)
-    error_handler.setFormatter(detailed_formatter)
+    error_handler.setFormatter(file_formatter)
     root_logger.addHandler(error_handler)
 
     # Configure specific loggers
@@ -52,7 +70,7 @@ def setup_logging():
 
     # Log startup message
     logger = logging.getLogger(__name__)
-    logger.info(f"Logging configured - Level: {settings.LOG_LEVEL}, Environment: {settings.ENVIRONMENT}")
+    logger.info(f"logging configured - Level: {settings.LOG_LEVEL}, Environment: {settings.ENVIRONMENT}")
 
 
 def get_logger(name: str) -> logging.Logger:
