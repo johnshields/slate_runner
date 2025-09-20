@@ -47,8 +47,8 @@ class RenderJobStatus(str, Enum):
 
 
 class AssetType(str, Enum):
-    vehicle = "Vehicle"
-    creature = "Creature"
-    character = "Character"
-    effect = "Effect"
-    environment = "Environment"
+    Vehicle = "Vehicle"
+    Creature = "Creature"
+    Character = "Character"
+    Effect = "Effect"
+    Environment = "Environment"

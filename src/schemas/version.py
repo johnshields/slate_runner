@@ -1,6 +1,6 @@
 ﻿from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict
 from enums.enums import VersionStatus
 
 
