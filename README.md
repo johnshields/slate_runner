@@ -19,10 +19,14 @@ source .venv/bin/activate        # macOS / Linux
 # 5. Install everything you need
 pip install -e ".[dev]"
 
-# 6. Start the app!
+# 6. Run the API!
 slate run
 
 # Type `slate --help` to see all available commands.
+
+# Alt
+pip install -r requirements.txt
+python -m uvicorn main:app --app-dir src --host 127.0.0.1 --port 8049
 ```
 
 #### .env example:
@@ -31,7 +35,8 @@ slate run
 API_HOST=0.0.0.0
 API_PORT=8049
 LOG_LEVEL=info
-SERVICE_NAME=slate_runner_api
+ENVIRONMENT=development
+SERVICE=slate_runner_api
 
 # auth
 API_USERNAME=user
