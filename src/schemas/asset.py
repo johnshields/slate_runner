@@ -2,6 +2,7 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from enums.enums import AssetType
+from utils.utils import normalize_input
 
 
 class AssetOut(BaseModel):
@@ -26,9 +27,17 @@ class AssetCreate(BaseModel):
             raise ValueError("Asset name cannot be empty")
         return v.strip()
 
+    @field_validator("type", mode="before")
+    def normalize_type(cls, v):
+        return normalize_input(v, AssetType)
+
 
 class AssetUpdate(BaseModel):
     uid: Optional[str] = None
     project_uid: Optional[str] = None
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     type: Optional[AssetType] = None
+
+    @field_validator("type", mode="before")
+    def normalize_type(cls, v):
+        return normalize_input(v, AssetType)
