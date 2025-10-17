@@ -2,7 +2,7 @@
 from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 from db.db import get_db
-import api.services.asset_service as service
+import api.controllers.asset_controller as controller
 import schemas.asset
 import schemas.task
 
@@ -15,7 +15,7 @@ def post_asset(
         db: Session = Depends(get_db)
 ):
     """Create a new Asset."""
-    return service.create_asset(db, data)
+    return controller.create_asset(db, data)
 
 
 @router.patch("/assets/{identifier}", response_model=schemas.asset.AssetOut)
@@ -25,7 +25,7 @@ def patch_asset(
         db: Session = Depends(get_db),
 ):
     """Update an Asset by UID or name."""
-    return service.update_asset(db, identifier, data)
+    return controller.update_asset(db, identifier, data)
 
 
 @router.delete("/assets/{identifier}")
@@ -34,7 +34,7 @@ def delete_asset(
         db: Session = Depends(get_db),
 ):
     """Delete an Asset by UID or name."""
-    return service.delete_asset(db, identifier)
+    return controller.delete_asset(db, identifier)
 
 
 @router.get("/assets", response_model=list[schemas.asset.AssetOut])
@@ -49,7 +49,7 @@ def get_assets(
         db: Session = Depends(get_db)
 ):
     """List or search Assets with optional filters (excludes soft-deleted by default)."""
-    return service.list_assets(db, uid, project_uid, name, type, limit, offset, include_deleted)
+    return controller.list_assets(db, uid, project_uid, name, type, limit, offset, include_deleted)
 
 
 @router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.task.TaskOut])
@@ -58,4 +58,4 @@ def get_asset_tasks(
         db: Session = Depends(get_db)
 ):
     """List all Tasks for an Asset."""
-    return service.list_asset_tasks(db, asset_uid)
+    return controller.list_asset_tasks(db, asset_uid)

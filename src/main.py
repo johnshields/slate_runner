@@ -8,8 +8,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from starlette.templating import Jinja2Templates
 from app.config import settings
-from api import router as api_router
-from api.routes_v1 import router as v1_router
+from api.routes.system import router as system_router
+from api.routes import router as api_router
 from db.db import engine
 from app.logging_config import setup_logging, get_logger
 from app.exceptions import handle_slate_runner_exception, SlateRunnerException
@@ -61,7 +61,7 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "templates"))
+    templates = Jinja2Templates(directory=os.path.join(os.path.dirname(__file__), "public"))
 
     # Root endpoint
     @api.get("/", response_class=HTMLResponse, tags=["root"])
@@ -80,11 +80,11 @@ def create_app() -> FastAPI:
     # Favicon route
     @api.get("/favicon.ico", include_in_schema=False)
     def favicon():
-        file_path = os.path.join(os.path.dirname(__file__), "static", "favicon.ico")
+        file_path = os.path.join(os.path.dirname(__file__), "public", "static", "favicon.ico")
         return FileResponse(file_path)
 
     # Mount all static files
-    api.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "static")), name="static")
+    api.mount("/static", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "public", "static")), name="static")
 
     # Exception handlers
     @api.exception_handler(SlateRunnerException)
@@ -105,8 +105,8 @@ def create_app() -> FastAPI:
         )
 
     # Include API routes
-    api.include_router(api_router, prefix="/api")
-    api.include_router(v1_router, prefix="/api/v1")
+    api.include_router(system_router, prefix="/api")
+    api.include_router(api_router, prefix="/api/v1")
     return api
 
 

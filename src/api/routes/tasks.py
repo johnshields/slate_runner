@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from db.db import get_db
-import api.services.task_service as service
+import api.controllers.task_controller as controller
 import schemas.task
 import schemas.version
 
@@ -15,7 +15,7 @@ def post_task(
         db: Session = Depends(get_db),
 ):
     """Create a new Task with auto-generated initial Version."""
-    return service.create_task(db, data)
+    return controller.create_task(db, data)
 
 
 @router.patch("/tasks/{uid}", response_model=schemas.task.TaskOut)
@@ -25,7 +25,7 @@ def patch_task(
         db: Session = Depends(get_db),
 ):
     """Update a Task by UID."""
-    return service.update_task(db, uid, data)
+    return controller.update_task(db, uid, data)
 
 
 @router.delete("/tasks/{uid}")
@@ -34,7 +34,7 @@ def delete_task(
         db: Session = Depends(get_db),
 ):
     """Delete a Task by UID."""
-    return service.delete_task(db, uid)
+    return controller.delete_task(db, uid)
 
 
 @router.get("/tasks", response_model=list[schemas.task.TaskOut])
@@ -52,7 +52,7 @@ def get_tasks(
         db: Session = Depends(get_db),
 ):
     """List or search Tasks with optional filters (excludes soft-deleted by default)."""
-    return service.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset, include_deleted)
+    return controller.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset, include_deleted)
 
 
 @router.get("/tasks/{task_uid}/versions", response_model=List[schemas.version.VersionOut])
@@ -61,4 +61,4 @@ def get_task_versions(
         db: Session = Depends(get_db),
 ):
     """List all Versions for a Task."""
-    return service.list_task_versions(db, task_uid)
+    return controller.list_task_versions(db, task_uid)

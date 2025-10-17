@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-import api.services.event_service as service
+import api.controllers.event_controller as controller
 import schemas.event
 
 router = APIRouter()
@@ -19,7 +19,7 @@ def get_events(
         db: Session = Depends(get_db),
 ):
     """List or search Events with optional filters (excludes soft-deleted by default)."""
-    return service.list_events(db, uid, project_uid, kind, limit, offset, include_deleted)
+    return controller.list_events(db, uid, project_uid, kind, limit, offset, include_deleted)
 
 
 @router.post("/events", response_model=schemas.event.EventOut, status_code=201)
@@ -28,7 +28,7 @@ def post_event(
         db: Session = Depends(get_db)
 ):
     """Create a new Event."""
-    return service.create_event(db, data)
+    return controller.create_event(db, data)
 
 
 @router.patch("/events/{uid}", response_model=schemas.event.EventOut)
@@ -38,7 +38,7 @@ def patch_event(
         db: Session = Depends(get_db),
 ):
     """Update an Event by UID."""
-    return service.update_event(db, uid, data)
+    return controller.update_event(db, uid, data)
 
 
 @router.delete("/events/{uid}")
@@ -47,4 +47,4 @@ def delete_event(
         db: Session = Depends(get_db),
 ):
     """Delete an Event by UID."""
-    return service.delete_event(db, uid)
+    return controller.delete_event(db, uid)

@@ -2,9 +2,9 @@
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
-from api.system.system_service import status_payload, db_conn
-from api.dependencies.auth import require_token, is_authenticated
-from api.system.health_checker import get_health_status
+from api.controllers.system.system_controller import status_payload, db_conn
+from api.dependencies.auth import require_token
+from services.health_service import get_health_status
 from db.db import get_db
 
 router = APIRouter()

@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-import api.services.render_service as service
+import api.controllers.render_controller as controller
 import schemas.render
 
 router = APIRouter()
@@ -20,7 +20,7 @@ def get_render_jobs(
         db: Session = Depends(get_db),
 ):
     """List or search Render Jobs with optional filters (excludes soft-deleted by default)."""
-    return service.list_render_jobs(db, uid, project_uid, adapter, status, limit, offset, include_deleted)
+    return controller.list_render_jobs(db, uid, project_uid, adapter, status, limit, offset, include_deleted)
 
 
 @router.post("/renders", response_model=schemas.render.RenderJobOut, status_code=201)
@@ -29,7 +29,7 @@ def post_render_job(
         db: Session = Depends(get_db)
 ):
     """Create a new Render Job."""
-    return service.create_render_job(db, data)
+    return controller.create_render_job(db, data)
 
 
 @router.patch("/renders/{uid}", response_model=schemas.render.RenderJobOut)
@@ -39,7 +39,7 @@ def patch_render_job(
         db: Session = Depends(get_db),
 ):
     """Update a Render Job by UID."""
-    return service.update_render_job(db, uid, data)
+    return controller.update_render_job(db, uid, data)
 
 
 @router.delete("/renders/{uid}")
@@ -48,4 +48,4 @@ def delete_render_job(
         db: Session = Depends(get_db),
 ):
     """Delete a Render Job by UID."""
-    return service.delete_render_job(db, uid)
+    return controller.delete_render_job(db, uid)

@@ -13,8 +13,14 @@ import utils.utils as utils
 
 # Create a new project, generate a UID if not provided
 def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
-    # Validate project name is unique
-    if db.scalar(select(Project).where(Project.name == data.name)):
+    # Validate project name is unique among non-deleted projects
+    existing = db.scalar(
+        select(Project).where(
+            Project.name == data.name,
+            Project.deleted_at.is_(None)
+        )
+    )
+    if existing:
         raise HTTPException(
             status_code=409,
             detail=f"Project '{data.name}' already exists."

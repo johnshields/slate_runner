@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-import api.services.publish_service as service
+import api.controllers.publish_controller as controller
 import schemas.publish
 
 router = APIRouter()
@@ -22,7 +22,7 @@ def get_publishes(
         db: Session = Depends(get_db),
 ):
     """List or search Publishes with optional filters (excludes soft-deleted by default)."""
-    return service.list_publishes(db, uid, project_uid, version_uid, type, representation, path, limit, offset, include_deleted)
+    return controller.list_publishes(db, uid, project_uid, version_uid, type, representation, path, limit, offset, include_deleted)
 
 
 @router.post("/publishes", response_model=schemas.publish.PublishOut, status_code=201)
@@ -31,7 +31,7 @@ def post_publish(
         db: Session = Depends(get_db)
 ):
     """Create a new Publish."""
-    return service.create_publish(db, data)
+    return controller.create_publish(db, data)
 
 
 @router.patch("/publishes/{uid}", response_model=schemas.publish.PublishOut)
@@ -41,7 +41,7 @@ def patch_publish(
         db: Session = Depends(get_db),
 ):
     """Update a Publish by UID."""
-    return service.update_publish(db, uid, data)
+    return controller.update_publish(db, uid, data)
 
 
 @router.delete("/publishes/{uid}")
@@ -50,4 +50,4 @@ def delete_publish(
         db: Session = Depends(get_db),
 ):
     """Delete a Publish by UID."""
-    return service.delete_publish(db, uid)
+    return controller.delete_publish(db, uid)

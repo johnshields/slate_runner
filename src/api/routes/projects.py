@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
 from enums.enums import PublishType, Representation, ParentType
-import api.services.project_service as service
+import api.controllers.project_controller as controller
 import schemas.asset
 import schemas.project
 import schemas.publish
@@ -19,7 +19,7 @@ def post_project(
         db: Session = Depends(get_db)
 ):
     """Create a new Project."""
-    return service.create_project(db, data)
+    return controller.create_project(db, data)
 
 
 @router.patch("/projects/{identifier}", response_model=schemas.project.ProjectOut)
@@ -29,7 +29,7 @@ def patch_project(
         db: Session = Depends(get_db),
 ):
     """Update a Project by UID or name."""
-    return service.update_project(db, identifier, data)
+    return controller.update_project(db, identifier, data)
 
 
 @router.delete("/projects/{identifier}")
@@ -38,7 +38,7 @@ def delete_project(
         db: Session = Depends(get_db),
 ):
     """Delete a Project by UID or name."""
-    return service.delete_project(db, identifier)
+    return controller.delete_project(db, identifier)
 
 
 @router.get("/projects", response_model=list[schemas.project.ProjectOut])
@@ -51,7 +51,7 @@ def get_projects(
         db: Session = Depends(get_db),
 ):
     """List or search Projects with optional filters (excludes soft-deleted by default)."""
-    return service.list_projects(db, uid, name, limit, offset, include_deleted)
+    return controller.list_projects(db, uid, name, limit, offset, include_deleted)
 
 
 @router.get("/projects/{project_uid}/overview", response_model=schemas.project.ProjectOverviewOut)
@@ -60,7 +60,7 @@ def project_overview(
         db: Session = Depends(get_db)
 ):
     """Retrieve Project overview by UID."""
-    return service.list_project_overview(db, project_uid=project_uid)
+    return controller.list_project_overview(db, project_uid=project_uid)
 
 
 @router.get("/projects/{project_uid}/assets", response_model=list[schemas.asset.AssetOut])
@@ -69,7 +69,7 @@ def get_project_assets(
         db: Session = Depends(get_db)
 ):
     """List all Assets for a Project."""
-    assets = service.list_project_assets(db, project_uid)
+    assets = controller.list_project_assets(db, project_uid)
     return assets
 
 
@@ -84,7 +84,7 @@ def get_project_shots(
     """List Shots for a Project with optional filters."""
 
     try:
-        return service.list_project_shots(db, project_uid, seq, shot, range)
+        return controller.list_project_shots(db, project_uid, seq, shot, range)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -97,7 +97,7 @@ def get_project_tasks(
         db: Session = Depends(get_db),
 ):
     """List Project Tasks with optional filters."""
-    return service.list_project_tasks(db, project_uid, parent_type, status)
+    return controller.list_project_tasks(db, project_uid, parent_type, status)
 
 
 @router.get("/projects/{project_uid}/publishes", response_model=list[schemas.publish.PublishOut])
@@ -108,4 +108,4 @@ def get_project_publishes(
         db: Session = Depends(get_db)
 ):
     """List Project Publishes with optional filters."""
-    return service.list_project_publishes(db, project_uid, type, rep)
+    return controller.list_project_publishes(db, project_uid, type, rep)

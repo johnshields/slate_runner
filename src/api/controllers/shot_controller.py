@@ -14,6 +14,21 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
     # Validate project exists
     project = utils.db_lookup(db, Project, data.project_uid)
 
+    # Validate shot is unique within project among non-deleted shots
+    existing = db.scalar(
+        select(Shot).where(
+            Shot.project_uid == data.project_uid,
+            Shot.seq == data.seq,
+            Shot.shot == data.shot,
+            Shot.deleted_at.is_(None)
+        )
+    )
+    if existing:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Shot '{data.seq}/{data.shot}' already exists in project '{data.project_uid}'."
+        )
+
     # Create and persist shot
     uid = data.uid or utils.generate_uid("SHOT")
     new_shot = Shot(

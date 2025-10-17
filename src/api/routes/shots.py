@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-import api.services.shot_service as service
+import api.controllers.shot_controller as controller
 import schemas.shot
 
 router = APIRouter()
@@ -14,7 +14,7 @@ def post_shot(
         db: Session = Depends(get_db)
 ):
     """Create a new Shot."""
-    return service.create_shot(db, data)
+    return controller.create_shot(db, data)
 
 
 @router.patch("/shots/{shot_uid}", response_model=schemas.shot.ShotOut)
@@ -24,7 +24,7 @@ def patch_shot(
         db: Session = Depends(get_db),
 ):
     """Update a Shot by UID."""
-    return service.update_shot(db, shot_uid, data)
+    return controller.update_shot(db, shot_uid, data)
 
 
 @router.delete("/shots/{shot_uid}")
@@ -33,7 +33,7 @@ def delete_shot(
         db: Session = Depends(get_db),
 ):
     """Delete a Shot by UID."""
-    return service.delete_shot(db, shot_uid)
+    return controller.delete_shot(db, shot_uid)
 
 
 @router.get("/shots", response_model=list[schemas.shot.ShotOut])
@@ -47,4 +47,4 @@ def get_shots(
         db: Session = Depends(get_db),
 ):
     """List or search Shots with optional filters (excludes soft-deleted by default)."""
-    return service.list_shots(db, uid, project_uid, shot, limit, offset, include_deleted)
+    return controller.list_shots(db, uid, project_uid, shot, limit, offset, include_deleted)

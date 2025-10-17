@@ -15,8 +15,15 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     # Validate project exists
     project = utils.db_lookup(db, Project, data.project_uid)
 
-    # Validate asset name is unique within project
-    if db.scalar(select(Asset).where(Asset.project_uid == data.project_uid, Asset.name == data.name)):
+    # Validate asset name is unique within project among non-deleted assets
+    existing = db.scalar(
+        select(Asset).where(
+            Asset.project_uid == data.project_uid,
+            Asset.name == data.name,
+            Asset.deleted_at.is_(None)
+        )
+    )
+    if existing:
         raise HTTPException(
             status_code=409,
             detail=f"Asset '{data.name}' already exists in project '{data.project_uid}'."

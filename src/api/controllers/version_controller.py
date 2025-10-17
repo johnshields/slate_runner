@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from typing import Optional
-from api.services.task_service import VERSION_DEFAULT_STATUS
+from api.controllers.task_controller import VERSION_DEFAULT_STATUS
 from models.publish import Publish
 from models.version import Version
 from models.task import Task

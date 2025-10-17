@@ -2,7 +2,7 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
-import api.services.version_service as service
+import api.controllers.version_controller as controller
 import schemas.version
 
 router = APIRouter()
@@ -15,7 +15,7 @@ def post_version(
         publish: bool = Query(default=False, description="Also create an initial publish"),
 ):
     """Create a new Version with optional auto-generated Publish."""
-    return service.create_version(db, data, publish=publish)
+    return controller.create_version(db, data, publish=publish)
 
 
 @router.patch("/versions/{uid}", response_model=schemas.version.VersionOut)
@@ -25,7 +25,7 @@ def patch_version(
         db: Session = Depends(get_db),
 ):
     """Update a Version by UID."""
-    return service.update_version(db, uid, data)
+    return controller.update_version(db, uid, data)
 
 
 @router.delete("/versions/{uid}")
@@ -34,7 +34,7 @@ def delete_version(
         db: Session = Depends(get_db),
 ):
     """Delete a Version by UID."""
-    return service.delete_version(db, uid)
+    return controller.delete_version(db, uid)
 
 
 @router.get("/versions", response_model=list[schemas.version.VersionOut])
@@ -51,4 +51,4 @@ def get_versions(
         db: Session = Depends(get_db),
 ):
     """List or search Versions with optional filters (excludes soft-deleted by default)."""
-    return service.list_versions(db, uid, project_uid, task_uid, vnum, status, created_by, limit, offset, include_deleted)
+    return controller.list_versions(db, uid, project_uid, task_uid, vnum, status, created_by, limit, offset, include_deleted)
