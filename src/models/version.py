@@ -27,5 +27,6 @@ class Version(Base):
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
     )
+    deleted_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
 
     __table_args__ = (UniqueConstraint("task_uid", "vnum", name="uq_version_per_task"),)

@@ -1,5 +1,5 @@
 ﻿from typing import Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 from db.db import get_db
 import api.services.asset_service as service
@@ -45,10 +45,11 @@ def get_assets(
         type: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        include_deleted: bool = Query(False, description="Include soft-deleted records"),
         db: Session = Depends(get_db)
 ):
-    """List or search Shots with optional filters."""
-    return service.list_assets(db, uid, project_uid, name, type, limit, offset)
+    """List or search Assets with optional filters (excludes soft-deleted by default)."""
+    return service.list_assets(db, uid, project_uid, name, type, limit, offset, include_deleted)
 
 
 @router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.task.TaskOut])

@@ -47,7 +47,8 @@ def get_versions(
         created_by: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
         offset: int = Query(0, ge=0),
+        include_deleted: bool = Query(False, description="Include soft-deleted records"),
         db: Session = Depends(get_db),
 ):
-    """List or search Versions with optional filters."""
-    return service.list_versions(db, uid, project_uid, task_uid, vnum, status, created_by, limit, offset)
+    """List or search Versions with optional filters (excludes soft-deleted by default)."""
+    return service.list_versions(db, uid, project_uid, task_uid, vnum, status, created_by, limit, offset, include_deleted)

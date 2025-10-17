@@ -114,16 +114,20 @@ def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
     return task
 
 
-# Delete a task by UID or name
+# Delete a task by UID (soft delete)
 def delete_task(db: Session, uid: str) -> dict:
+    from datetime import datetime, timezone
+    
     task = utils.db_lookup(db, Task, uid)
-
-    db.delete(task)
+    
+    # Soft delete: set deleted_at timestamp
+    task.deleted_at = datetime.now(timezone.utc)
+    
     db.commit()
     return {"detail": f"Task '{uid}' deleted successfully"}
 
 
-# Get a list of all tasks, with optional filtering
+# Get a list of all tasks, with optional filtering (excluding soft-deleted)
 def list_tasks(
         db: Session,
         uid: Optional[str] = None,
@@ -135,8 +139,13 @@ def list_tasks(
         status: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        include_deleted: bool = False,
 ):
     stmt = select(Task)
+    
+    # Exclude soft-deleted records by default
+    if not include_deleted:
+        stmt = stmt.where(Task.deleted_at.is_(None))
 
     if uid:
         stmt = stmt.where(Task.uid == uid)

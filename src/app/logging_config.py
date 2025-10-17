@@ -31,11 +31,11 @@ class ColorFormatter(logging.Formatter):
 def setup_logging():
     """Configure application logging"""
 
-    detailed_formatter = ColorFormatter(
-        '[%(levelname)s] %(message)s @ %(asctime)s - %(name)s - %(filename)s:%(lineno)d'
-    )
+    # Console formatter - simple and clean
+    console_formatter = ColorFormatter('[%(levelname)s]: %(message)s')
 
-    simple_formatter = ColorFormatter('%(levelname)s - %(message)s')
+    # File formatter - keep detailed for debugging
+    file_format = '[%(levelname)s]: %(message)s @ %(asctime)s - %(name)s - %(filename)s:%(lineno)d'
 
     # Root logger
     root_logger = logging.getLogger()
@@ -47,12 +47,11 @@ def setup_logging():
     # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(getattr(logging, settings.LOG_LEVEL))
-    console_handler.setFormatter(simple_formatter if settings.is_production() else detailed_formatter)
+    console_handler.setFormatter(console_formatter)
     root_logger.addHandler(console_handler)
 
-    file_formatter = logging.Formatter(
-        '[%(levelname)s] %(message)s @ %(asctime)s - %(name)s - %(filename)s:%(lineno)d'
-    )
+    # File formatter
+    file_formatter = logging.Formatter(file_format)
     file_handler = logging.FileHandler(LOGS_DIR / "slate_runner.log")
     file_handler.setLevel(logging.INFO)
     file_handler.setFormatter(file_formatter)

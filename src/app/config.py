@@ -13,8 +13,6 @@ class Settings(BaseSettings):
     DESC: str = "RESTful FastAPI for fixing it in post."
     VERSION: str = "0.0.1"
     API_VERSION: str = "v1"
-    API_HOST: str = "0.0.0.0"
-    API_PORT: int = 8049
     LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "RESET"] = "INFO"
 
     # Environment

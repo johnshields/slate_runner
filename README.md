@@ -21,15 +21,17 @@ pip install -e ".[dev]"
 
 # 6. Start the app!
 slate run
-# python -m uvicorn main:app --app-dir src --host 0.0.0.0 --port 8049
-# Type `slate --help` to see all available commands.
+# OR use uvicorn directly:
+python -m uvicorn main:app --app-dir src
+# OR use FastAPI CLI:
+fastapi dev src/main.py
+fastapi run src/main.py
+# Type `slate --help` to see all available CLI commands.
 ```
 
 #### .env example:
 ```dotenv
 # server
-API_HOST=0.0.0.0
-API_PORT=8049
 LOG_LEVEL=info
 
 # auth

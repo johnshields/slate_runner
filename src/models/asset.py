@@ -15,4 +15,5 @@ class Asset(Base):
     type: Mapped[Optional[AssetType]] = mapped_column(Enum(AssetType), nullable=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
+    deleted_at: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
     __table_args__ = (UniqueConstraint("project_uid", "name", name="uq_asset_project_name"),)

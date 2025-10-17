@@ -69,16 +69,20 @@ def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
     return shot
 
 
-# Delete a shot by UID
+# Delete a shot by UID (soft delete)
 def delete_shot(db: Session, uid: str) -> dict:
+    from datetime import datetime, timezone
+    
     shot = utils.db_lookup(db, Shot, uid)
-
-    db.delete(shot)
+    
+    # Soft delete: set deleted_at timestamp
+    shot.deleted_at = datetime.now(timezone.utc)
+    
     db.commit()
     return {"detail": f"Shot '{uid}' deleted successfully"}
 
 
-# Get a list of tasks versions, with optional filtering
+# Get a list of shots, with optional filtering (excluding soft-deleted)
 def list_shots(
         db: Session,
         uid: Optional[str] = None,
@@ -86,8 +90,13 @@ def list_shots(
         shot: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        include_deleted: bool = False,
 ):
     stmt = select(Shot)
+    
+    # Exclude soft-deleted records by default
+    if not include_deleted:
+        stmt = stmt.where(Shot.deleted_at.is_(None))
 
     if uid:
         stmt = stmt.where(Shot.uid == uid)

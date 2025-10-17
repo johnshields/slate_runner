@@ -93,13 +93,18 @@ def update_version(db: Session, uid: str, data: VersionUpdate) -> VersionOut:
 
 
 def delete_version(db: Session, uid: str) -> dict:
+    from datetime import datetime, timezone
+    
     version = utils.db_lookup(db, Version, uid)
-    db.delete(version)
+    
+    # Soft delete: set deleted_at timestamp
+    version.deleted_at = datetime.now(timezone.utc)
+    
     db.commit()
     return {"detail": f"Version '{uid}' deleted successfully"}
 
 
-# Get a list of all versions, with optional filtering
+# Get a list of all versions, with optional filtering (excluding soft-deleted)
 def list_versions(
         db: Session,
         uid: Optional[str] = None,
@@ -110,8 +115,13 @@ def list_versions(
         created_by: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        include_deleted: bool = False,
 ):
     stmt = select(Version)
+    
+    # Exclude soft-deleted records by default
+    if not include_deleted:
+        stmt = stmt.where(Version.deleted_at.is_(None))
 
     if uid:
         stmt = stmt.where(Version.uid == uid)

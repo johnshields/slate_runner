@@ -56,16 +56,20 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
     return asset
 
 
-# Delete an asset by UID or name
+# Delete an asset by UID or name (soft delete)
 def delete_asset(db: Session, identifier: str) -> dict:
+    from datetime import datetime, timezone
+    
     asset = utils.db_lookup(db, Asset, identifier)
-
-    db.delete(asset)
+    
+    # Soft delete: set deleted_at timestamp
+    asset.deleted_at = datetime.now(timezone.utc)
+    
     db.commit()
     return {"detail": f"Asset '{identifier}' deleted successfully"}
 
 
-# Get a list of all assets, with optional filtering
+# Get a list of all assets, with optional filtering (excluding soft-deleted)
 def list_assets(
         db: Session,
         uid: Optional[str] = None,
@@ -74,8 +78,13 @@ def list_assets(
         type: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        include_deleted: bool = False,
 ):
     stmt = select(Asset)
+    
+    # Exclude soft-deleted records by default
+    if not include_deleted:
+        stmt = stmt.where(Asset.deleted_at.is_(None))
 
     if uid:
         stmt = stmt.where(Asset.uid == uid)

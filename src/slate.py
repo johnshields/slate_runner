@@ -26,9 +26,7 @@ def main(ctx: typer.Context):
 
 @app.command()
 def run():
-    """Run the FastAPI app using .env configuration (or defaults)."""
-    api_host = os.getenv("API_HOST", "0.0.0.0")
-    api_port = os.getenv("API_PORT", "8049")
+    """Run the FastAPI app with auto-reload."""
     service_name = os.getenv("SERVICE_NAME", "slate_runner_api")
     log_level = os.getenv("LOG_LEVEL", "INFO").lower()
 
@@ -37,8 +35,6 @@ def run():
     subprocess.run(
         [
             sys.executable, "-m", "uvicorn", "main:app",
-            "--host", api_host,
-            "--port", api_port,
             "--reload",
             "--log-level", log_level
         ],

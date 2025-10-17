@@ -42,24 +42,33 @@ def update_project(db: Session, identifier: str, data: ProjectUpdate) -> Project
     return project
 
 
-# Delete a project by UID or name
+# Delete a project by UID or name (soft delete)
 def delete_project(db: Session, identifier: str) -> dict:
+    from datetime import datetime, timezone
+    
     project = utils.db_lookup(db, Project, identifier)
-
-    db.delete(project)
+    
+    # Soft delete: set deleted_at timestamp
+    project.deleted_at = datetime.now(timezone.utc)
+    
     db.commit()
     return {"detail": f"Project '{identifier}' deleted successfully"}
 
 
-# Get a list of all projects, with optional filtering by UID or name
+# Get a list of all projects, with optional filtering by UID or name (excluding soft-deleted)
 def list_projects(
         db: Session,
         uid: Optional[str] = None,
         name: Optional[str] = None,
         limit: int = 100,
         offset: int = 0,
+        include_deleted: bool = False,
 ):
     stmt = select(Project)
+    
+    # Exclude soft-deleted records by default
+    if not include_deleted:
+        stmt = stmt.where(Project.deleted_at.is_(None))
 
     if uid:
         stmt = stmt.where(Project.uid == uid)

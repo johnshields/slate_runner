@@ -48,10 +48,11 @@ def get_tasks(
         status: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
         offset: int = Query(0, ge=0),
+        include_deleted: bool = Query(False, description="Include soft-deleted records"),
         db: Session = Depends(get_db),
 ):
-    """List or search tasks with optional filters."""
-    return service.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset)
+    """List or search tasks with optional filters (excludes soft-deleted by default)."""
+    return service.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset, include_deleted)
 
 
 @router.get("/tasks/{task_uid}/versions", response_model=List[schemas.version.VersionOut])
