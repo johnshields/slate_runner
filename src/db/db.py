@@ -1,7 +1,7 @@
 ﻿from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from typing import Generator
-from utils.utils import build_database_url
+from utils.database import build_database_url
 from app.config import settings
 from app.logging_config import get_logger
 

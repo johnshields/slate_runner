@@ -5,7 +5,9 @@ from models.render import RenderJob
 from models.project import Project
 from schemas.render import RenderJobOut, RenderJobCreate, RenderJobUpdate
 from typing import Optional
-from utils import utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 
 # Get a list of render jobs with optional filtering (excluding soft-deleted)
@@ -44,10 +46,10 @@ def list_render_jobs(
 # Create a new render job
 def create_render_job(db: Session, data: RenderJobCreate) -> RenderJobOut:
     # Validate project exists
-    project = utils.db_lookup(db, Project, data.project_uid)
+    project = db_lookup(db, Project, data.project_uid)
     
     # Generate UID if not provided
-    uid = data.uid or utils.generate_uid("RJ")
+    uid = data.uid or generate_uid("RJ")
     
     # Create and persist render job
     new_render_job = RenderJob(
@@ -68,7 +70,7 @@ def create_render_job(db: Session, data: RenderJobCreate) -> RenderJobOut:
 # Update a render job by UID
 def update_render_job(db: Session, uid: str, data: RenderJobUpdate) -> RenderJobOut:
     # Locate render job by UID
-    render_job = utils.db_lookup(db, RenderJob, uid)
+    render_job = db_lookup(db, RenderJob, uid)
     
     # Update fields if provided
     if data.context is not None:
@@ -90,12 +92,10 @@ def update_render_job(db: Session, uid: str, data: RenderJobUpdate) -> RenderJob
 
 # Delete a render job by UID (soft delete)
 def delete_render_job(db: Session, uid: str) -> dict:
-    from datetime import datetime, timezone
-    
-    render_job = utils.db_lookup(db, RenderJob, uid)
+    render_job = db_lookup(db, RenderJob, uid)
     
     # Soft delete: set deleted_at timestamp
-    render_job.deleted_at = datetime.now(timezone.utc)
+    render_job.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Render job '{uid}' deleted successfully"}

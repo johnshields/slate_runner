@@ -7,13 +7,15 @@ from models.asset import Asset
 from models.project import Project
 from schemas.task import TaskOut
 from schemas.asset import AssetOut, AssetCreate, AssetUpdate
-import utils.utils as utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 
 # Create a new asset, generate a UID if not provided.
 def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     # Validate project exists
-    project = utils.db_lookup(db, Project, data.project_uid)
+    project = db_lookup(db, Project, data.project_uid)
 
     # Validate asset name is unique within project among non-deleted assets
     existing = db.scalar(
@@ -30,7 +32,7 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
         )
 
     # Create and persist asset
-    uid = data.uid or utils.generate_uid("ASSET")
+    uid = data.uid or generate_uid("ASSET")
     new_asset = Asset(uid=uid, project_uid=project.uid, name=data.name, type=data.type)
     db.add(new_asset)
     db.commit()
@@ -42,7 +44,7 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
 # Update an asset by UID or name
 def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
     # Locate asset by UID or name
-    asset = utils.db_lookup(db, Asset, identifier)
+    asset = db_lookup(db, Asset, identifier)
 
     # Update project association if provided
     if data.project_uid:
@@ -65,12 +67,10 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
 
 # Delete an asset by UID or name (soft delete)
 def delete_asset(db: Session, identifier: str) -> dict:
-    from datetime import datetime, timezone
-    
-    asset = utils.db_lookup(db, Asset, identifier)
+    asset = db_lookup(db, Asset, identifier)
     
     # Soft delete: set deleted_at timestamp
-    asset.deleted_at = datetime.now(timezone.utc)
+    asset.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Asset '{identifier}' deleted successfully"}
@@ -111,7 +111,7 @@ def list_assets(
 
 # Get all tasks belonging to an asset
 def list_asset_tasks(db: Session, asset_uid: str) -> list[TaskOut]:
-    utils.db_lookup(db, Asset, asset_uid)
+    db_lookup(db, Asset, asset_uid)
 
     stmt = select(Task).where(
         Task.parent_type == "asset", Task.parent_uid == asset_uid

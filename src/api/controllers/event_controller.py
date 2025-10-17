@@ -5,7 +5,9 @@ from models.event import Event
 from models.project import Project
 from schemas.event import EventOut, EventCreate, EventUpdate
 from typing import Optional
-from utils import utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 
 # Get a list of events with optional filtering (excluding soft-deleted)
@@ -40,10 +42,10 @@ def list_events(
 # Create a new event
 def create_event(db: Session, data: EventCreate) -> EventOut:
     # Validate project exists
-    project = utils.db_lookup(db, Project, data.project_uid)
+    project = db_lookup(db, Project, data.project_uid)
     
     # Generate UID if not provided
-    uid = data.uid or utils.generate_uid("EVENT")
+    uid = data.uid or generate_uid("EVENT")
     
     # Create and persist event
     new_event = Event(
@@ -63,7 +65,7 @@ def create_event(db: Session, data: EventCreate) -> EventOut:
 # Update an event by UID
 def update_event(db: Session, uid: str, data: EventUpdate) -> EventOut:
     # Locate event by UID
-    event = utils.db_lookup(db, Event, uid)
+    event = db_lookup(db, Event, uid)
     
     # Update fields if provided
     if data.kind is not None:
@@ -79,12 +81,10 @@ def update_event(db: Session, uid: str, data: EventUpdate) -> EventOut:
 
 # Delete an event by UID (soft delete)
 def delete_event(db: Session, uid: str) -> dict:
-    from datetime import datetime, timezone
-    
-    event = utils.db_lookup(db, Event, uid)
+    event = db_lookup(db, Event, uid)
     
     # Soft delete: set deleted_at timestamp
-    event.deleted_at = datetime.now(timezone.utc)
+    event.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Event '{uid}' deleted successfully"}

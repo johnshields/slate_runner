@@ -8,7 +8,9 @@ from models.asset import Asset
 from models.project import Project
 from typing import Optional
 from schemas.project import ProjectOut, ProjectCreate, ProjectUpdate, ProjectOverviewOut
-import utils.utils as utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 
 # Create a new project, generate a UID if not provided
@@ -27,7 +29,7 @@ def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
         )
 
     # Create and persist project
-    uid = data.uid or utils.generate_uid("PROJ")
+    uid = data.uid or generate_uid("PROJ")
     new_project = Project(uid=uid, name=data.name)
     db.add(new_project)
     db.commit()
@@ -38,7 +40,7 @@ def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
 
 # Update a project by UID or name
 def update_project(db: Session, identifier: str, data: ProjectUpdate) -> ProjectOut:
-    project = utils.db_lookup(db, Project, identifier)
+    project = db_lookup(db, Project, identifier)
 
     if data.name:
         project.name = data.name
@@ -50,12 +52,10 @@ def update_project(db: Session, identifier: str, data: ProjectUpdate) -> Project
 
 # Delete a project by UID or name (soft delete)
 def delete_project(db: Session, identifier: str) -> dict:
-    from datetime import datetime, timezone
-    
-    project = utils.db_lookup(db, Project, identifier)
+    project = db_lookup(db, Project, identifier)
     
     # Soft delete: set deleted_at timestamp
-    project.deleted_at = datetime.now(timezone.utc)
+    project.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Project '{identifier}' deleted successfully"}
@@ -88,7 +88,7 @@ def list_projects(
 
 # Get basic counts and info for a single project
 def list_project_overview(db: Session, project_uid: str) -> ProjectOverviewOut:
-    project = utils.db_lookup(db, Project, project_uid)
+    project = db_lookup(db, Project, project_uid)
 
     # Count shots and tasks for the project
     shots_count = db.scalar(select(func.count()).select_from(Shot).where(Shot.project_uid == project_uid))
@@ -112,7 +112,7 @@ def list_project_assets(
         db: Session,
         project_uid: str
 ):
-    utils.db_lookup(db, Project, project_uid)
+    db_lookup(db, Project, project_uid)
 
     stmt = select(Asset).where(Asset.project_uid == project_uid).order_by(Asset.name.asc())
     return db.execute(stmt).scalars().all()
@@ -126,7 +126,7 @@ def list_project_shots(
         shot: str = None,
         range: str = None
 ):
-    utils.db_lookup(db, Project, project_uid)
+    db_lookup(db, Project, project_uid)
 
     stmt = select(Shot).where(Shot.project_uid == project_uid)
     if seq:
@@ -153,7 +153,7 @@ def list_project_tasks(
         parent_type: Optional[str] = None,
         status: Optional[str] = None,
 ):
-    utils.db_lookup(db, Project, project_uid)
+    db_lookup(db, Project, project_uid)
 
     stmt = select(Task).where(Task.project_uid == project_uid)
     if parent_type:
@@ -172,7 +172,7 @@ def list_project_publishes(
         type: str = None,
         rep: str = None
 ):
-    utils.db_lookup(db, Project, project_uid)
+    db_lookup(db, Project, project_uid)
 
     stmt = select(Publish).where(Publish.project_uid == project_uid)
     if type:

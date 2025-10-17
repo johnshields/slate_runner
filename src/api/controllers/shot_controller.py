@@ -4,15 +4,16 @@ from sqlalchemy import select
 from models.shot import Shot
 from models.project import Project
 from typing import Optional
-
 from schemas.shot import ShotCreate, ShotUpdate, ShotOut
-from utils import utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 
 # Create a new shot, generate a UID if not provided.
 def create_shot(db: Session, data: ShotCreate) -> ShotOut:
     # Validate project exists
-    project = utils.db_lookup(db, Project, data.project_uid)
+    project = db_lookup(db, Project, data.project_uid)
 
     # Validate shot is unique within project among non-deleted shots
     existing = db.scalar(
@@ -30,7 +31,7 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
         )
 
     # Create and persist shot
-    uid = data.uid or utils.generate_uid("SHOT")
+    uid = data.uid or generate_uid("SHOT")
     new_shot = Shot(
         uid=uid,
         project_uid=project.uid,
@@ -51,7 +52,7 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
 # Update a shot by UID
 def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
     # Locate shot by UID
-    shot = utils.db_lookup(db, Shot, uid)
+    shot = db_lookup(db, Shot, uid)
 
     # Update project association if provided
     if data.project_uid:
@@ -86,12 +87,10 @@ def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
 
 # Delete a shot by UID (soft delete)
 def delete_shot(db: Session, uid: str) -> dict:
-    from datetime import datetime, timezone
-    
-    shot = utils.db_lookup(db, Shot, uid)
+    shot = db_lookup(db, Shot, uid)
     
     # Soft delete: set deleted_at timestamp
-    shot.deleted_at = datetime.now(timezone.utc)
+    shot.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Shot '{uid}' deleted successfully"}

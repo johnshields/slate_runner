@@ -1,11 +1,7 @@
-﻿import random
-import string
 from urllib.parse import quote_plus
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from typing import Optional, Type, TypeVar
-from enum import Enum
 from app.config import settings
 
 
@@ -34,12 +30,8 @@ def build_database_url() -> str:
     )
 
 
-def generate_uid(prefix: str, length: int = 6) -> str:
-    suffix = ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
-    return f"{prefix}_{suffix}"
-
-
 def db_lookup(db: Session, model, identifier: str) -> object:
+    """Lookup a database record by UID or name."""
     item = db.scalar(select(model).where(model.uid == identifier))
     if not item and hasattr(model, 'name'):
         item = db.scalar(select(model).where(model.name == identifier))
@@ -51,16 +43,3 @@ def db_lookup(db: Session, model, identifier: str) -> object:
         )
     return item
 
-
-T = TypeVar("T", bound=Enum)
-
-
-def normalize_input(value: Optional[str], enum_cls: Type[T]) -> Optional[T]:
-    if value is None:
-        return None
-
-    for member in enum_cls:
-        if member.value.lower() == value.lower():
-            return member
-
-    raise ValueError(f"Invalid Enum value: {value}. Must be one of {[m.value for m in enum_cls]}")

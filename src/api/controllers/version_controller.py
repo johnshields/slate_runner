@@ -8,7 +8,9 @@ from models.version import Version
 from models.task import Task
 from models.project import Project
 from schemas.version import VersionOut, VersionCreate, VersionUpdate
-from utils import utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 
 def create_version(
@@ -19,8 +21,8 @@ def create_version(
         created_by: str | None = None,
 ) -> VersionOut:
     # Validate project and task exist
-    project = utils.db_lookup(db, Project, data.project_uid)
-    task = utils.db_lookup(db, Task, data.task_uid)
+    project = db_lookup(db, Project, data.project_uid)
+    task = db_lookup(db, Task, data.task_uid)
 
     # Calculate next version number if not provided
     if data.vnum is None:
@@ -32,7 +34,7 @@ def create_version(
         vnum = data.vnum
 
     version = Version(
-        uid=utils.generate_uid("VER"),
+        uid=generate_uid("VER"),
         project_uid=project.uid,
         task_uid=task.uid,
         vnum=vnum,
@@ -45,7 +47,7 @@ def create_version(
 
     if publish:
         publish = Publish(
-            uid=utils.generate_uid("PUB"),
+            uid=generate_uid("PUB"),
             project_uid=project.uid,
             version_uid=version.uid,
             type=data.publish_type,
@@ -64,7 +66,7 @@ def create_version(
 # Update a version by UID
 def update_version(db: Session, uid: str, data: VersionUpdate) -> VersionOut:
     # Locate version by UID
-    version = utils.db_lookup(db, Version, uid)
+    version = db_lookup(db, Version, uid)
 
     # Update project association if provided
     if data.project_uid:
@@ -93,12 +95,10 @@ def update_version(db: Session, uid: str, data: VersionUpdate) -> VersionOut:
 
 
 def delete_version(db: Session, uid: str) -> dict:
-    from datetime import datetime, timezone
-    
-    version = utils.db_lookup(db, Version, uid)
+    version = db_lookup(db, Version, uid)
     
     # Soft delete: set deleted_at timestamp
-    version.deleted_at = datetime.now(timezone.utc)
+    version.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Version '{uid}' deleted successfully"}

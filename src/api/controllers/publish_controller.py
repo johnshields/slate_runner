@@ -6,16 +6,18 @@ from models.project import Project
 from models.version import Version
 from schemas.publish import PublishOut, PublishCreate, PublishUpdate
 from typing import Optional
-from utils import utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 # Create a new publish
 def create_publish(db: Session, data: PublishCreate) -> PublishOut:
     # Validate project and version exist
-    project = utils.db_lookup(db, Project, data.project_uid)
-    version = utils.db_lookup(db, Version, data.version_uid)
+    project = db_lookup(db, Project, data.project_uid)
+    version = db_lookup(db, Version, data.version_uid)
 
     # Generate UID if not provided
-    uid = data.uid or utils.generate_uid("PUB")
+    uid = data.uid or generate_uid("PUB")
     
     # Create and persist publish
     new_publish = Publish(
@@ -38,7 +40,7 @@ def create_publish(db: Session, data: PublishCreate) -> PublishOut:
 # Update a publish by UID
 def update_publish(db: Session, uid: str, data: PublishUpdate) -> PublishOut:
     # Locate publish by UID
-    publish = utils.db_lookup(db, Publish, uid)
+    publish = db_lookup(db, Publish, uid)
     
     # Update fields if provided
     if data.type is not None:
@@ -60,12 +62,10 @@ def update_publish(db: Session, uid: str, data: PublishUpdate) -> PublishOut:
 
 # Delete a publish by UID (soft delete)
 def delete_publish(db: Session, uid: str) -> dict:
-    from datetime import datetime, timezone
-    
-    publish = utils.db_lookup(db, Publish, uid)
+    publish = db_lookup(db, Publish, uid)
     
     # Soft delete: set deleted_at timestamp
-    publish.deleted_at = datetime.now(timezone.utc)
+    publish.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Publish '{uid}' deleted successfully"}

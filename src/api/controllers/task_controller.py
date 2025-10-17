@@ -6,9 +6,10 @@ from models.version import Version
 from models.task import Task
 from models.project import Project
 from typing import Optional
-
 from schemas.task import TaskOut, TaskCreate, TaskUpdate
-from utils import utils
+from utils.database import db_lookup
+from utils.uid import generate_uid
+from utils.datetime_helpers import now_utc
 
 TASK_DEFAULT_STATUS = "WIP"
 VERSION_DEFAULT_STATUS = "draft"
@@ -17,10 +18,10 @@ VERSION_DEFAULT_STATUS = "draft"
 # Create a new task, generate a UID if not provided, and auto-create Version v1.
 def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None) -> TaskOut:
     # Validate project exists
-    project = utils.db_lookup(db, Project, data.project_uid)
+    project = db_lookup(db, Project, data.project_uid)
 
     # Create and persist task
-    uid = data.uid or utils.generate_uid("TASK")
+    uid = data.uid or generate_uid("TASK")
     new_task = Task(
         uid=uid,
         project_uid=project.uid,
@@ -70,7 +71,7 @@ def create_task_version(
         vnum: int = 1,
 ) -> Version:
     ver = Version(
-        uid=utils.generate_uid("VER"),
+        uid=generate_uid("VER"),
         project_uid=task.project_uid,
         task_uid=task.uid,
         vnum=vnum,
@@ -84,7 +85,7 @@ def create_task_version(
 # Update a task by UID
 def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
     # Locate task by UID
-    task = utils.db_lookup(db, Task, uid)
+    task = db_lookup(db, Task, uid)
 
     # Update project association if provided
     if data.project_uid:
@@ -116,12 +117,10 @@ def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
 
 # Delete a task by UID (soft delete)
 def delete_task(db: Session, uid: str) -> dict:
-    from datetime import datetime, timezone
-    
-    task = utils.db_lookup(db, Task, uid)
+    task = db_lookup(db, Task, uid)
     
     # Soft delete: set deleted_at timestamp
-    task.deleted_at = datetime.now(timezone.utc)
+    task.deleted_at = now_utc()
     
     db.commit()
     return {"detail": f"Task '{uid}' deleted successfully"}
@@ -176,7 +175,7 @@ def list_task_versions(
         db: Session,
         task_uid: str,
 ):
-    utils.db_lookup(db, Task, task_uid)
+    db_lookup(db, Task, task_uid)
 
     stmt = (
         select(Version)

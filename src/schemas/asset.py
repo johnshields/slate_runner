@@ -2,7 +2,7 @@
 from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from enums.enums import AssetType
-from utils.utils import normalize_input
+from utils.validation import normalize_input
 
 
 class AssetOut(BaseModel):
