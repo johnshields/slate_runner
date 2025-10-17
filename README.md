@@ -21,7 +21,7 @@ pip install -e ".[dev]"
 
 # 6. Start the app!
 slate run
-
+# python -m uvicorn main:app --app-dir src --host 0.0.0.0 --port 8049
 # Type `slate --help` to see all available commands.
 ```
 
@@ -31,20 +31,17 @@ slate run
 API_HOST=0.0.0.0
 API_PORT=8049
 LOG_LEVEL=info
-SERVICE_NAME=slate_runner_api
 
 # auth
-API_USERNAME=user
-API_TOKEN=token
-SECRET_KEY=secret
+API_USERNAME=admin
+API_TOKEN=secure_token
+SECRET_KEY=secure_secret_key
 
-# supabase pooler
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=slate_db
-DB_USER=user.hash
-DB_PASSWORD=password
-DB_SSLMODE=require
+# supabase 
+DB_HOST=aws-0-us-east-1.pooler.supabase.com  
+DB_NAME=postgres
+DB_USER=postgres.project-ref
+DB_PASSWORD=hash
 ```
 
 #### SQL script located here [sql/001_schema.sql](works/sql/001_schema.sql)

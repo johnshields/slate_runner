@@ -21,14 +21,13 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["development", "staging", "production"] = "development"
     DEBUG: bool = False
 
-    # Database Configuration
-    DATABASE_URL: str | None = None
+    # supabase
     DB_HOST: str | None = None
-    DB_PORT: int | None = 5432
+    DB_PORT: int = 6543
     DB_NAME: str | None = None
     DB_USER: str | None = None
     DB_PASSWORD: str | None = None
-    DB_SSLMODE: str | None = "require"
+    DB_SSLMODE: str = "disable"
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
 

@@ -11,6 +11,10 @@ logger = get_logger(__name__)
 # Create the engine and session factory
 def setup_database():
     db_url = build_database_url()
+    
+    # Log connection attempt (mask password)
+    safe_url = db_url.split('@')[1] if '@' in db_url else 'unknown'
+    logger.info(f"Connecting to database: {safe_url}")
 
     # Engine configuration
     engine_kwargs = {
@@ -18,7 +22,6 @@ def setup_database():
         "pool_size": settings.DB_POOL_SIZE,
         "max_overflow": settings.DB_MAX_OVERFLOW,
         "pool_recycle": 3600,  # Recycle connections after 1 hour
-        "connect_args": {"sslmode": settings.DB_SSLMODE},
         "future": True,
     }
 

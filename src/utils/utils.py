@@ -7,18 +7,28 @@ from sqlalchemy import select
 from app.config import settings
 
 
-# Build db url for Supabase session pooler
 def build_database_url() -> str:
-    if not all([settings.DB_HOST, settings.DB_PORT, settings.DB_NAME, settings.DB_USER, settings.DB_PASSWORD]):
-        raise RuntimeError("DB parts missing; set DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD in .env")
-
+    """Build PostgreSQL connection URL from environment variables."""
+    required_fields = {
+        "DB_HOST": settings.DB_HOST,
+        "DB_PORT": settings.DB_PORT,
+        "DB_NAME": settings.DB_NAME,
+        "DB_USER": settings.DB_USER,
+        "DB_PASSWORD": settings.DB_PASSWORD,
+    }
+    
+    missing = [key for key, value in required_fields.items() if not value]
+    if missing:
+        raise RuntimeError(
+            f"Missing required database configuration in .env: {', '.join(missing)}"
+        )
+    
     pw = quote_plus(settings.DB_PASSWORD)
-    sslmode = settings.DB_SSLMODE or "require"
-
+    
     return (
-        "postgresql+psycopg2://"
-        f"{settings.DB_USER}:{pw}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
-        f"?sslmode={sslmode}"
+        f"postgresql+psycopg2://{settings.DB_USER}:{pw}"
+        f"@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}"
+        f"?sslmode={settings.DB_SSLMODE}"
     )
 
 
