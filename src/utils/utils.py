@@ -4,6 +4,8 @@ from urllib.parse import quote_plus
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from typing import Optional, Type, TypeVar
+from enum import Enum
 from app.config import settings
 
 
@@ -48,3 +50,17 @@ def db_lookup(db: Session, model, identifier: str) -> object:
             detail=f"{model.__name__} with UID or name '{identifier}' not found."
         )
     return item
+
+
+T = TypeVar("T", bound=Enum)
+
+
+def normalize_input(value: Optional[str], enum_cls: Type[T]) -> Optional[T]:
+    if value is None:
+        return None
+
+    for member in enum_cls:
+        if member.value.lower() == value.lower():
+            return member
+
+    raise ValueError(f"Invalid Enum value: {value}. Must be one of {[m.value for m in enum_cls]}")

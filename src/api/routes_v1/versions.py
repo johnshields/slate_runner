@@ -28,7 +28,7 @@ def patch_version(
     return service.update_version(db, uid, data)
 
 
-@router.delete("versions/{uid}")
+@router.delete("/versions/{uid}")
 def delete_version(
         uid: str,
         db: Session = Depends(get_db),

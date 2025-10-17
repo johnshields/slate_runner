@@ -2,7 +2,7 @@
 from typing import Optional
 from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func, UniqueConstraint, Enum
 from sqlalchemy.orm import Mapped, mapped_column
-from .base import Base
+from models import Base
 from enums.enums import AssetType
 
 

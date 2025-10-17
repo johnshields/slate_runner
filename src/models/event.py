@@ -3,7 +3,7 @@ from typing import Optional, Dict, Any
 from sqlalchemy import Integer, String, ForeignKey, TIMESTAMP, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
-from .base import Base
+from models import Base
 
 
 class Event(Base):

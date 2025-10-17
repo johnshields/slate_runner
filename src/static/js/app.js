@@ -35,7 +35,7 @@ function syntaxHighlight(json) {
     );
 }
 
-// Generic endpoint status loader
+// Endpoint status loader
 async function showEndpointStatus(endpoint, resultId, headerId) {
     const resultDiv = document.getElementById(resultId);
     const header = document.getElementById(headerId);
@@ -56,7 +56,7 @@ async function showEndpointStatus(endpoint, resultId, headerId) {
 }
 
 // Shortcuts for /api endpoint
-const showApiStatus    = () => showEndpointStatus('/api',        'api-result',   'api-header');
+const showApiStatus    = () => showEndpointStatus('/api', 'api-result', 'api-header');
 
 // Toggle expand/collapse for sections
 function toggleSection(id) {
