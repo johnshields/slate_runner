@@ -6,7 +6,7 @@ from app.config import settings
 LOGS_DIR = Path(__file__).parent.parent.parent / "logs"
 LOGS_DIR.mkdir(exist_ok=True)
 
-# ANSI color codes
+# Terminal color codes for log output
 COLORS = {
     "debug": "\033[2m",  # green
     "info": "\033[34m",  # blue
@@ -31,26 +31,26 @@ class ColorFormatter(logging.Formatter):
 def setup_logging():
     """Configure application logging"""
 
-    # Console formatter - simple and clean
+    # Simple console formatter with color support
     console_formatter = ColorFormatter('[%(levelname)s]: %(message)s')
 
-    # File formatter - keep detailed for debugging
+    # Detailed file formatter for debugging
     file_format = '[%(levelname)s]: %(message)s @ %(asctime)s - %(name)s - %(filename)s:%(lineno)d'
 
-    # Root logger
+    # Configure root logger
     root_logger = logging.getLogger()
     root_logger.setLevel(getattr(logging, settings.LOG_LEVEL))
 
-    # Clear old handlers
+    # Remove existing handlers
     root_logger.handlers.clear()
 
-    # Console handler
+    # Configure console output
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(getattr(logging, settings.LOG_LEVEL))
     console_handler.setFormatter(console_formatter)
     root_logger.addHandler(console_handler)
 
-    # File formatter
+    # Configure file logging
     file_formatter = logging.Formatter(file_format)
     file_handler = logging.FileHandler(LOGS_DIR / "slate_runner.log")
     file_handler.setLevel(logging.INFO)
@@ -62,12 +62,12 @@ def setup_logging():
     error_handler.setFormatter(file_formatter)
     root_logger.addHandler(error_handler)
 
-    # Configure specific loggers
+    # Set log levels for third-party loggers
     logging.getLogger("uvicorn").setLevel(logging.INFO)
     logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
     logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
 
-    # Log startup message
+    # Confirm logging initialization
     logger = logging.getLogger(__name__)
     logger.info(f"logging configured - Level: {settings.LOG_LEVEL}, Environment: {settings.ENVIRONMENT}")
 

@@ -23,7 +23,7 @@ def patch_shot(
         data: schemas.shot.ShotUpdate,
         db: Session = Depends(get_db),
 ):
-    """Update a shot by UID."""
+    """Update a Shot by UID."""
     return service.update_shot(db, shot_uid, data)
 
 
@@ -32,7 +32,7 @@ def delete_shot(
         shot_uid: str,
         db: Session = Depends(get_db),
 ):
-    """Delete an Asset by UID."""
+    """Delete a Shot by UID."""
     return service.delete_shot(db, shot_uid)
 
 

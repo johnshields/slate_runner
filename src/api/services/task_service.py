@@ -16,7 +16,7 @@ VERSION_DEFAULT_STATUS = "draft"
 
 # Create a new task, generate a UID if not provided, and auto-create Version v1.
 def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None) -> TaskOut:
-    # check if project exists
+    # Validate project exists
     project = utils.db_lookup(db, Project, data.project_uid)
 
     # Create and persist task
@@ -32,7 +32,7 @@ def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None)
     )
 
     try:
-        # Flush to validate task constraints
+        # Validate task constraints
         db.add(new_task)
         db.flush()
     except IntegrityError as e:
@@ -40,7 +40,7 @@ def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None)
         raise HTTPException(status_code=400, detail="Task violates a database constraint") from e
 
     try:
-        # Auto-create initial version (v1) for the task (defaults to 'draft')
+        # Auto-create initial version v1 with draft status
         create_task_version(
             db,
             task=new_task,
@@ -48,19 +48,19 @@ def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None)
             created_by=created_by or new_task.assignee,
             vnum=1,
         )
-        # Flush to validate version constraints only
+        # Validate version constraints
         db.flush()
     except IntegrityError as e:
         db.rollback()
         raise HTTPException(status_code=500, detail="Failed to create initial version") from e
 
-    # Commit both task and version atomically
+    # Commit task and version atomically
     db.commit()
     db.refresh(new_task)
     return new_task
 
 
-# Helper: create a version for a given task (defaults to 'draft', v1 unless overridden).
+# Create version for task with default status and version number
 def create_task_version(
         db: Session,
         *,
@@ -83,10 +83,10 @@ def create_task_version(
 
 # Update a task by UID
 def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
-    # Find task by UID
+    # Locate task by UID
     task = utils.db_lookup(db, Task, uid)
 
-    # Optionally update project association if project_uid is provided
+    # Update project association if provided
     if data.project_uid:
         project = db.scalar(select(Project).where(Project.uid == data.project_uid))
         if not project:

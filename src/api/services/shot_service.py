@@ -11,7 +11,7 @@ from utils import utils
 
 # Create a new shot, generate a UID if not provided.
 def create_shot(db: Session, data: ShotCreate) -> ShotOut:
-    # check if project exists
+    # Validate project exists
     project = utils.db_lookup(db, Project, data.project_uid)
 
     # Create and persist shot
@@ -35,10 +35,10 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
 
 # Update a shot by UID
 def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
-    # Find shot by UID
+    # Locate shot by UID
     shot = utils.db_lookup(db, Shot, uid)
 
-    # Optionally update project association if project_uid is provided
+    # Update project association if provided
     if data.project_uid:
         project = db.scalar(select(Project).where(Project.uid == data.project_uid))
         if not project:

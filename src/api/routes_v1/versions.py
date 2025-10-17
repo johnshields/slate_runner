@@ -14,7 +14,7 @@ def post_version(
         db: Session = Depends(get_db),
         publish: bool = Query(default=False, description="Also create an initial publish"),
 ):
-    """Create a new Version - optionally auto creates a publish."""
+    """Create a new Version with optional auto-generated Publish."""
     return service.create_version(db, data, publish=publish)
 
 

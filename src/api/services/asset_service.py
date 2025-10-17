@@ -12,10 +12,10 @@ import utils.utils as utils
 
 # Create a new asset, generate a UID if not provided.
 def create_asset(db: Session, data: AssetCreate) -> AssetOut:
-    # check if project exists
+    # Validate project exists
     project = utils.db_lookup(db, Project, data.project_uid)
 
-    # Check if asset with same name already exists in this project
+    # Validate asset name is unique within project
     if db.scalar(select(Asset).where(Asset.project_uid == data.project_uid, Asset.name == data.name)):
         raise HTTPException(
             status_code=409,
@@ -34,10 +34,10 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
 
 # Update an asset by UID or name
 def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
-    # Find asset by UID or name
+    # Locate asset by UID or name
     asset = utils.db_lookup(db, Asset, identifier)
 
-    # Optionally update project association if project_uid is provided
+    # Update project association if provided
     if data.project_uid:
         project = db.scalar(select(Project).where(Project.uid == data.project_uid))
         if not project:

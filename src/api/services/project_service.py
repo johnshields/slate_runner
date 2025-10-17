@@ -13,7 +13,7 @@ import utils.utils as utils
 
 # Create a new project, generate a UID if not provided
 def create_project(db: Session, data: ProjectCreate) -> ProjectOut:
-    # Check if a project with the same name already exists
+    # Validate project name is unique
     if db.scalar(select(Project).where(Project.name == data.name)):
         raise HTTPException(
             status_code=409,

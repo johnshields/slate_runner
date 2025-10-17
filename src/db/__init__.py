@@ -1,1 +1,1 @@
-﻿# db package
+﻿# Database package initialization

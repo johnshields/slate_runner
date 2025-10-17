@@ -14,7 +14,7 @@ def post_task(
         data: schemas.task.TaskCreate,
         db: Session = Depends(get_db),
 ):
-    """Create a new Task - auto creates a version."""
+    """Create a new Task with auto-generated initial Version."""
     return service.create_task(db, data)
 
 
@@ -51,7 +51,7 @@ def get_tasks(
         include_deleted: bool = Query(False, description="Include soft-deleted records"),
         db: Session = Depends(get_db),
 ):
-    """List or search tasks with optional filters (excludes soft-deleted by default)."""
+    """List or search Tasks with optional filters (excludes soft-deleted by default)."""
     return service.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset, include_deleted)
 
 
@@ -60,5 +60,5 @@ def get_task_versions(
         task_uid: str,
         db: Session = Depends(get_db),
 ):
-    """List all versions belonging to a task."""
+    """List all Versions for a Task."""
     return service.list_task_versions(db, task_uid)

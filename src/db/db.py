@@ -8,20 +8,20 @@ from app.logging_config import get_logger
 logger = get_logger(__name__)
 
 
-# Create the engine and session factory
+# Initialize database engine and session factory
 def setup_database():
     db_url = build_database_url()
     
-    # Log connection attempt (mask password)
+    # Mask password in connection log
     safe_url = db_url.split('@')[1] if '@' in db_url else 'unknown'
     logger.info(f"Connecting to database: {safe_url}")
 
-    # Engine configuration
+    # Configure database engine
     engine_kwargs = {
         "pool_pre_ping": True,
         "pool_size": settings.DB_POOL_SIZE,
         "max_overflow": settings.DB_MAX_OVERFLOW,
-        "pool_recycle": 3600,  # Recycle connections after 1 hour
+        "pool_recycle": 3600,
         "future": True,
     }
 
@@ -41,7 +41,7 @@ def setup_database():
     return session_local, db_engine
 
 
-# Instantiate at startup
+# Initialize database session at application startup
 SessionLocal, engine = setup_database()
 
 

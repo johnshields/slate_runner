@@ -18,11 +18,11 @@ def create_version(
         publish: bool = False,
         created_by: str | None = None,
 ) -> VersionOut:
-    # Ensure project and task exist
+    # Validate project and task exist
     project = utils.db_lookup(db, Project, data.project_uid)
     task = utils.db_lookup(db, Task, data.task_uid)
 
-    # Get next vnum if not provided
+    # Calculate next version number if not provided
     if data.vnum is None:
         max_vnum = db.scalar(
             select(func.max(Version.vnum)).where(Version.task_uid == task.uid)
@@ -41,7 +41,7 @@ def create_version(
     )
 
     db.add(version)
-    db.flush()  # may raise if constraint violated explicitly
+    db.flush()
 
     if publish:
         publish = Publish(
@@ -63,17 +63,17 @@ def create_version(
 
 # Update a version by UID
 def update_version(db: Session, uid: str, data: VersionUpdate) -> VersionOut:
-    # Find version by UID
+    # Locate version by UID
     version = utils.db_lookup(db, Version, uid)
 
-    # Optionally update project association if project_uid is provided
+    # Update project association if provided
     if data.project_uid:
         project = db.scalar(select(Project).where(Project.uid == data.project_uid))
         if not project:
             raise HTTPException(status_code=404, detail="Target project not found")
         version.project_uid = project.uid
 
-    # Optionally update task association if task_uid is provided
+    # Update task association if provided
     if data.task_uid:
         task = db.scalar(select(Task).where(Task.uid == data.task_uid))
         if not task:

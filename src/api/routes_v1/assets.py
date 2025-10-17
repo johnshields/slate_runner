@@ -14,7 +14,7 @@ def post_asset(
         data: schemas.asset.AssetCreate,
         db: Session = Depends(get_db)
 ):
-    """Create a new Asset"""
+    """Create a new Asset."""
     return service.create_asset(db, data)
 
 
@@ -24,7 +24,7 @@ def patch_asset(
         data: schemas.asset.AssetUpdate,
         db: Session = Depends(get_db),
 ):
-    """Update an Asset by UID or Name."""
+    """Update an Asset by UID or name."""
     return service.update_asset(db, identifier, data)
 
 
@@ -33,7 +33,7 @@ def delete_asset(
         identifier: str,
         db: Session = Depends(get_db),
 ):
-    """Delete an Asset by UID or Name."""
+    """Delete an Asset by UID or name."""
     return service.delete_asset(db, identifier)
 
 
@@ -57,5 +57,5 @@ def get_asset_tasks(
         asset_uid: str,
         db: Session = Depends(get_db)
 ):
-    """Returns all Tasks for an Asset."""
+    """List all Tasks for an Asset."""
     return service.list_asset_tasks(db, asset_uid)

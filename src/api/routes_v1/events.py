@@ -15,7 +15,36 @@ def get_events(
         kind: Optional[str] = None,
         limit: int = Query(100, ge=1, le=500),
         offset: int = Query(0, ge=0),
+        include_deleted: bool = Query(False, description="Include soft-deleted records"),
         db: Session = Depends(get_db),
 ):
-    """List or search Events."""
-    return service.list_events(db, uid, project_uid, kind, limit, offset)
+    """List or search Events with optional filters (excludes soft-deleted by default)."""
+    return service.list_events(db, uid, project_uid, kind, limit, offset, include_deleted)
+
+
+@router.post("/events", response_model=schemas.event.EventOut, status_code=201)
+def post_event(
+        data: schemas.event.EventCreate,
+        db: Session = Depends(get_db)
+):
+    """Create a new Event."""
+    return service.create_event(db, data)
+
+
+@router.patch("/events/{uid}", response_model=schemas.event.EventOut)
+def patch_event(
+        uid: str,
+        data: schemas.event.EventUpdate,
+        db: Session = Depends(get_db),
+):
+    """Update an Event by UID."""
+    return service.update_event(db, uid, data)
+
+
+@router.delete("/events/{uid}")
+def delete_event(
+        uid: str,
+        db: Session = Depends(get_db),
+):
+    """Delete an Event by UID."""
+    return service.delete_event(db, uid)

@@ -18,7 +18,7 @@ def post_project(
         data: schemas.project.ProjectCreate,
         db: Session = Depends(get_db)
 ):
-    """Create a new Project"""
+    """Create a new Project."""
     return service.create_project(db, data)
 
 
@@ -28,7 +28,7 @@ def patch_project(
         data: schemas.project.ProjectUpdate,
         db: Session = Depends(get_db),
 ):
-    """Update a Project by UID or Name"""
+    """Update a Project by UID or name."""
     return service.update_project(db, identifier, data)
 
 
@@ -37,7 +37,7 @@ def delete_project(
         identifier: str,
         db: Session = Depends(get_db),
 ):
-    """Delete a Project by UID or Name."""
+    """Delete a Project by UID or name."""
     return service.delete_project(db, identifier)
 
 
@@ -50,7 +50,7 @@ def get_projects(
         include_deleted: bool = Query(False, description="Include soft-deleted records"),
         db: Session = Depends(get_db),
 ):
-    """List or search Projects by UID or name (excludes soft-deleted by default)."""
+    """List or search Projects with optional filters (excludes soft-deleted by default)."""
     return service.list_projects(db, uid, name, limit, offset, include_deleted)
 
 
@@ -59,7 +59,7 @@ def project_overview(
         project_uid: str,
         db: Session = Depends(get_db)
 ):
-    """List Project overview by UID."""
+    """Retrieve Project overview by UID."""
     return service.list_project_overview(db, project_uid=project_uid)
 
 
@@ -68,7 +68,7 @@ def get_project_assets(
         project_uid: str,
         db: Session = Depends(get_db)
 ):
-    """Returns all Assets for a Project."""
+    """List all Assets for a Project."""
     assets = service.list_project_assets(db, project_uid)
     return assets
 
@@ -81,7 +81,7 @@ def get_project_shots(
         range: Optional[str] = Query(None, description="Format: start-end (e.g. 100-200)"),
         db: Session = Depends(get_db),
 ):
-    """Returns Shots for a given Project, with optional filtering."""
+    """List Shots for a Project with optional filters."""
 
     try:
         return service.list_project_shots(db, project_uid, seq, shot, range)
@@ -96,7 +96,7 @@ def get_project_tasks(
         status: Optional[str] = None,
         db: Session = Depends(get_db),
 ):
-    """Returns Project Tasks filtered by parent_type and status."""
+    """List Project Tasks with optional filters."""
     return service.list_project_tasks(db, project_uid, parent_type, status)
 
 
@@ -107,5 +107,5 @@ def get_project_publishes(
         rep: Optional[Representation] = Query(None),
         db: Session = Depends(get_db)
 ):
-    """Returns Project Publishes filtered by type and representation."""
+    """List Project Publishes with optional filters."""
     return service.list_project_publishes(db, project_uid, type, rep)

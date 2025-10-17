@@ -37,7 +37,7 @@ def create_publish(db: Session, data: PublishCreate) -> PublishOut:
 
 # Update a publish by UID
 def update_publish(db: Session, uid: str, data: PublishUpdate) -> PublishOut:
-    # Find publish by UID
+    # Locate publish by UID
     publish = utils.db_lookup(db, Publish, uid)
     
     # Update fields if provided
