@@ -2,13 +2,15 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.render_controller as controller
 import schemas.render
 
 router = APIRouter()
 
 
-@router.get("/renders", response_model=list[schemas.render.RenderJobOut])
+@router.get("/renders", response_model=PaginatedResponse[schemas.render.RenderJobOut])
 def get_render_jobs(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -23,7 +25,7 @@ def get_render_jobs(
     return controller.list_render_jobs(db, uid, project_uid, adapter, status, limit, offset, include_deleted)
 
 
-@router.post("/renders", response_model=schemas.render.RenderJobOut, status_code=201)
+@router.post("/renders", response_model=ApiResponse[schemas.render.RenderJobOut], status_code=201)
 def post_render_job(
         data: schemas.render.RenderJobCreate,
         db: Session = Depends(get_db)
@@ -32,7 +34,7 @@ def post_render_job(
     return controller.create_render_job(db, data)
 
 
-@router.patch("/renders/{uid}", response_model=schemas.render.RenderJobOut)
+@router.patch("/renders/{uid}", response_model=ApiResponse[schemas.render.RenderJobOut])
 def patch_render_job(
         uid: str,
         data: schemas.render.RenderJobUpdate,

@@ -1,9 +1,10 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.event import Event
 from models.project import Project
 from schemas.event import EventOut, EventCreate, EventUpdate
+from schemas.response import create_response
 from typing import Optional
 from utils.database import db_lookup
 from utils.uid import generate_uid
@@ -19,24 +20,38 @@ def list_events(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(Event)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(Event)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(Event.deleted_at.is_(None))
+        base_stmt = base_stmt.where(Event.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(Event.uid == uid)
+        base_stmt = base_stmt.where(Event.uid == uid)
 
     if project_uid:
-        stmt = stmt.where(Event.project_uid == project_uid)
+        base_stmt = base_stmt.where(Event.project_uid == project_uid)
 
     if kind:
-        stmt = stmt.where(Event.kind == kind)
+        base_stmt = base_stmt.where(Event.kind == kind)
 
-    stmt = stmt.order_by(Event.created_at.desc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Event.created_at.desc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Events retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }
 
 
 # Create a new event
@@ -59,7 +74,7 @@ def create_event(db: Session, data: EventCreate) -> EventOut:
     db.commit()
     db.refresh(new_event)
     
-    return new_event
+    return create_response(new_event, "Event created successfully")
 
 
 # Update an event by UID
@@ -76,7 +91,7 @@ def update_event(db: Session, uid: str, data: EventUpdate) -> EventOut:
     
     db.commit()
     db.refresh(event)
-    return event
+    return create_response(event, "Event updated successfully")
 
 
 # Delete an event by UID (soft delete)
@@ -87,4 +102,4 @@ def delete_event(db: Session, uid: str) -> dict:
     event.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Event '{uid}' deleted successfully"}
+    return create_response(None, f"Event '{uid}' deleted successfully")

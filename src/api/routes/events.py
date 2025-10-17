@@ -2,13 +2,15 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.event_controller as controller
 import schemas.event
 
 router = APIRouter()
 
 
-@router.get("/events", response_model=list[schemas.event.EventOut])
+@router.get("/events", response_model=PaginatedResponse[schemas.event.EventOut])
 def get_events(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -22,7 +24,7 @@ def get_events(
     return controller.list_events(db, uid, project_uid, kind, limit, offset, include_deleted)
 
 
-@router.post("/events", response_model=schemas.event.EventOut, status_code=201)
+@router.post("/events", response_model=ApiResponse[schemas.event.EventOut], status_code=201)
 def post_event(
         data: schemas.event.EventCreate,
         db: Session = Depends(get_db)
@@ -31,7 +33,7 @@ def post_event(
     return controller.create_event(db, data)
 
 
-@router.patch("/events/{uid}", response_model=schemas.event.EventOut)
+@router.patch("/events/{uid}", response_model=ApiResponse[schemas.event.EventOut])
 def patch_event(
         uid: str,
         data: schemas.event.EventUpdate,

@@ -1,9 +1,10 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.render import RenderJob
 from models.project import Project
 from schemas.render import RenderJobOut, RenderJobCreate, RenderJobUpdate
+from schemas.response import create_response
 from typing import Optional
 from utils.database import db_lookup
 from utils.uid import generate_uid
@@ -20,27 +21,41 @@ def list_render_jobs(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(RenderJob)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(RenderJob)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(RenderJob.deleted_at.is_(None))
+        base_stmt = base_stmt.where(RenderJob.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(RenderJob.uid == uid)
+        base_stmt = base_stmt.where(RenderJob.uid == uid)
 
     if project_uid:
-        stmt = stmt.where(RenderJob.project_uid == project_uid)
+        base_stmt = base_stmt.where(RenderJob.project_uid == project_uid)
 
     if adapter:
-        stmt = stmt.where(RenderJob.adapter == adapter)
+        base_stmt = base_stmt.where(RenderJob.adapter == adapter)
 
     if status:
-        stmt = stmt.where(RenderJob.status == status)
+        base_stmt = base_stmt.where(RenderJob.status == status)
 
-    stmt = stmt.order_by(RenderJob.submitted_at.desc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(RenderJob.submitted_at.desc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Render jobs retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }
 
 
 # Create a new render job
@@ -64,7 +79,7 @@ def create_render_job(db: Session, data: RenderJobCreate) -> RenderJobOut:
     db.commit()
     db.refresh(new_render_job)
     
-    return new_render_job
+    return create_response(new_render_job, "Render job created successfully")
 
 
 # Update a render job by UID
@@ -87,7 +102,7 @@ def update_render_job(db: Session, uid: str, data: RenderJobUpdate) -> RenderJob
     
     db.commit()
     db.refresh(render_job)
-    return render_job
+    return create_response(render_job, "Render job updated successfully")
 
 
 # Delete a render job by UID (soft delete)
@@ -98,4 +113,4 @@ def delete_render_job(db: Session, uid: str) -> dict:
     render_job.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Render job '{uid}' deleted successfully"}
+    return create_response(None, f"Render job '{uid}' deleted successfully")

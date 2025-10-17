@@ -1,10 +1,11 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.shot import Shot
 from models.project import Project
 from typing import Optional
 from schemas.shot import ShotCreate, ShotUpdate, ShotOut
+from schemas.response import create_response
 from utils.database import db_lookup
 from utils.uid import generate_uid
 from utils.datetime_helpers import now_utc
@@ -46,7 +47,7 @@ def create_shot(db: Session, data: ShotCreate) -> ShotOut:
     db.commit()
     db.refresh(new_shot)
 
-    return new_shot
+    return create_response(new_shot, "Shot created successfully")
 
 
 # Update a shot by UID
@@ -82,7 +83,7 @@ def update_shot(db: Session, uid: str, data: ShotUpdate) -> ShotOut:
 
     db.commit()
     db.refresh(shot)
-    return shot
+    return create_response(shot, "Shot updated successfully")
 
 
 # Delete a shot by UID (soft delete)
@@ -93,7 +94,7 @@ def delete_shot(db: Session, uid: str) -> dict:
     shot.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Shot '{uid}' deleted successfully"}
+    return create_response(None, f"Shot '{uid}' deleted successfully")
 
 
 # Get a list of shots, with optional filtering (excluding soft-deleted)
@@ -105,21 +106,35 @@ def list_shots(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(Shot)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(Shot)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(Shot.deleted_at.is_(None))
+        base_stmt = base_stmt.where(Shot.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(Shot.uid == uid)
+        base_stmt = base_stmt.where(Shot.uid == uid)
 
     if project_uid:
-        stmt = stmt.where(Shot.project_uid == project_uid)
+        base_stmt = base_stmt.where(Shot.project_uid == project_uid)
 
     if shot:
-        stmt = stmt.where(Shot.shot.ilike(f"%{shot}%"))
+        base_stmt = base_stmt.where(Shot.shot.ilike(f"%{shot}%"))
 
-    stmt = stmt.order_by(Shot.shot.asc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Shot.shot.asc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Shots retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }

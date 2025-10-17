@@ -2,6 +2,8 @@
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.task_controller as controller
 import schemas.task
 import schemas.version
@@ -9,7 +11,7 @@ import schemas.version
 router = APIRouter()
 
 
-@router.post("/tasks", response_model=schemas.task.TaskOut, status_code=201)
+@router.post("/tasks", response_model=ApiResponse[schemas.task.TaskOut], status_code=201)
 def post_task(
         data: schemas.task.TaskCreate,
         db: Session = Depends(get_db),
@@ -18,7 +20,7 @@ def post_task(
     return controller.create_task(db, data)
 
 
-@router.patch("/tasks/{uid}", response_model=schemas.task.TaskOut)
+@router.patch("/tasks/{uid}", response_model=ApiResponse[schemas.task.TaskOut])
 def patch_task(
         uid: str,
         data: schemas.task.TaskUpdate,
@@ -37,7 +39,7 @@ def delete_task(
     return controller.delete_task(db, uid)
 
 
-@router.get("/tasks", response_model=list[schemas.task.TaskOut])
+@router.get("/tasks", response_model=PaginatedResponse[schemas.task.TaskOut])
 def get_tasks(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -55,10 +57,12 @@ def get_tasks(
     return controller.list_tasks(db, uid, project_uid, parent_type, parent_id, name, assignee, status, limit, offset, include_deleted)
 
 
-@router.get("/tasks/{task_uid}/versions", response_model=List[schemas.version.VersionOut])
+@router.get("/tasks/{task_uid}/versions", response_model=PaginatedResponse[schemas.version.VersionOut])
 def get_task_versions(
         task_uid: str,
         db: Session = Depends(get_db),
+        limit: int = Query(50, ge=1, le=500),
+        offset: int = Query(0, ge=0)
 ):
-    """List all Versions for a Task."""
-    return controller.list_task_versions(db, task_uid)
+    """List all Versions for a Task. Returns paginated results with metadata."""
+    return controller.list_task_versions(db, task_uid, limit, offset)

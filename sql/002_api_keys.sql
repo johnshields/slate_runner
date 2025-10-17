@@ -9,9 +9,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- ====================
 -- Drop all policies (safety cleanup)
--- ====================
 DO $$
 DECLARE r RECORD;
 BEGIN
@@ -23,9 +21,7 @@ BEGIN
   END LOOP;
 END$$;
 
--- ====================
 -- API_KEYS Table
--- ====================
 DROP TABLE IF EXISTS api_keys CASCADE;
 
 CREATE TABLE api_keys (
@@ -49,9 +45,7 @@ BEFORE UPDATE ON api_keys
 FOR EACH ROW
 EXECUTE FUNCTION set_updated_at();
 
--- ==============
 -- Helper Functions
--- ==============
 CREATE OR REPLACE FUNCTION is_valid_api_token() RETURNS BOOLEAN AS $$
 BEGIN
   RETURN EXISTS (
@@ -73,9 +67,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- ====================
 -- RLS for API_KEYS
--- ====================
 ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
 ALTER TABLE api_keys FORCE ROW LEVEL SECURITY;
 
@@ -93,9 +85,7 @@ CREATE POLICY api_keys_admin_policy ON api_keys
     ))
   );
 
--- ====================
 -- RLS for pipeline tables
--- ====================
 -- Pattern: SELECT allowed for all valid roles,
 --          INSERT/UPDATE/DELETE limited by role granularity.
 
@@ -270,9 +260,7 @@ CREATE POLICY events_write_policy ON events
     )
   );
 
--- ====================
 -- Example seed (safe dummy roles)
--- ====================
 INSERT INTO api_keys (token, description, role, is_admin, expires_at) VALUES
   ('dev-admin-token',     'Admin (full access)',         'admin',     true,  NULL),
   ('dev-td-token',        'TD (pipeline full access)',   'td',        true, NULL),

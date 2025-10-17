@@ -2,13 +2,15 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.shot_controller as controller
 import schemas.shot
 
 router = APIRouter()
 
 
-@router.post("/shots", response_model=schemas.shot.ShotOut, status_code=201)
+@router.post("/shots", response_model=ApiResponse[schemas.shot.ShotOut], status_code=201)
 def post_shot(
         data: schemas.shot.ShotCreate,
         db: Session = Depends(get_db)
@@ -17,7 +19,7 @@ def post_shot(
     return controller.create_shot(db, data)
 
 
-@router.patch("/shots/{shot_uid}", response_model=schemas.shot.ShotOut)
+@router.patch("/shots/{shot_uid}", response_model=ApiResponse[schemas.shot.ShotOut])
 def patch_shot(
         shot_uid: str,
         data: schemas.shot.ShotUpdate,
@@ -36,7 +38,7 @@ def delete_shot(
     return controller.delete_shot(db, shot_uid)
 
 
-@router.get("/shots", response_model=list[schemas.shot.ShotOut])
+@router.get("/shots", response_model=PaginatedResponse[schemas.shot.ShotOut])
 def get_shots(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

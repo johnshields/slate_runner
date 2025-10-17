@@ -2,6 +2,8 @@
 from fastapi import APIRouter, Query, Depends
 from sqlalchemy.orm import Session
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.asset_controller as controller
 import schemas.asset
 import schemas.task
@@ -9,7 +11,7 @@ import schemas.task
 router = APIRouter()
 
 
-@router.post("/assets", response_model=schemas.asset.AssetOut, status_code=201)
+@router.post("/assets", response_model=ApiResponse[schemas.asset.AssetOut], status_code=201)
 def post_asset(
         data: schemas.asset.AssetCreate,
         db: Session = Depends(get_db)
@@ -18,7 +20,7 @@ def post_asset(
     return controller.create_asset(db, data)
 
 
-@router.patch("/assets/{identifier}", response_model=schemas.asset.AssetOut)
+@router.patch("/assets/{identifier}", response_model=ApiResponse[schemas.asset.AssetOut])
 def patch_asset(
         identifier: str,
         data: schemas.asset.AssetUpdate,
@@ -37,7 +39,7 @@ def delete_asset(
     return controller.delete_asset(db, identifier)
 
 
-@router.get("/assets", response_model=list[schemas.asset.AssetOut])
+@router.get("/assets", response_model=PaginatedResponse[schemas.asset.AssetOut])
 def get_assets(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -52,10 +54,12 @@ def get_assets(
     return controller.list_assets(db, uid, project_uid, name, type, limit, offset, include_deleted)
 
 
-@router.get("/assets/{asset_uid}/tasks", response_model=list[schemas.task.TaskOut])
+@router.get("/assets/{asset_uid}/tasks", response_model=PaginatedResponse[schemas.task.TaskOut])
 def get_asset_tasks(
         asset_uid: str,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        limit: int = Query(50, ge=1, le=500),
+        offset: int = Query(0, ge=0)
 ):
-    """List all Tasks for an Asset."""
-    return controller.list_asset_tasks(db, asset_uid)
+    """List all Tasks for an Asset. Returns paginated results with metadata."""
+    return controller.list_asset_tasks(db, asset_uid, limit, offset)

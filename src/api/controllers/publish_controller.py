@@ -1,14 +1,16 @@
 ﻿from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.publish import Publish
 from models.project import Project
 from models.version import Version
 from schemas.publish import PublishOut, PublishCreate, PublishUpdate
+from schemas.response import create_response
 from typing import Optional
 from utils.database import db_lookup
 from utils.uid import generate_uid
 from utils.datetime_helpers import now_utc
+
 
 # Create a new publish
 def create_publish(db: Session, data: PublishCreate) -> PublishOut:
@@ -34,7 +36,7 @@ def create_publish(db: Session, data: PublishCreate) -> PublishOut:
     db.commit()
     db.refresh(new_publish)
     
-    return new_publish
+    return create_response(new_publish, "Publish created successfully")
 
 
 # Update a publish by UID
@@ -57,7 +59,7 @@ def update_publish(db: Session, uid: str, data: PublishUpdate) -> PublishOut:
     
     db.commit()
     db.refresh(publish)
-    return publish
+    return create_response(publish, "Publish updated successfully")
 
 
 # Delete a publish by UID (soft delete)
@@ -68,7 +70,7 @@ def delete_publish(db: Session, uid: str) -> dict:
     publish.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Publish '{uid}' deleted successfully"}
+    return create_response(None, f"Publish '{uid}' deleted successfully")
 
 
 # Get a list of all publishes, with optional filtering (excluding soft-deleted)
@@ -83,30 +85,44 @@ def list_publishes(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(Publish)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(Publish)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(Publish.deleted_at.is_(None))
+        base_stmt = base_stmt.where(Publish.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(Publish.uid == uid)
+        base_stmt = base_stmt.where(Publish.uid == uid)
 
     if project_uid:
-        stmt = stmt.where(Publish.project_uid == project_uid)
+        base_stmt = base_stmt.where(Publish.project_uid == project_uid)
 
     if version_uid:
-        stmt = stmt.where(Publish.version_uid == version_uid)
+        base_stmt = base_stmt.where(Publish.version_uid == version_uid)
 
     if type:
-        stmt = stmt.where(Publish.type == type)
+        base_stmt = base_stmt.where(Publish.type == type)
 
     if representation:
-        stmt = stmt.where(Publish.representation == representation)
+        base_stmt = base_stmt.where(Publish.representation == representation)
 
     if path:
-        stmt = stmt.where(Publish.path.ilike(f"%{path}%"))
+        base_stmt = base_stmt.where(Publish.path.ilike(f"%{path}%"))
 
-    stmt = stmt.order_by(Publish.created_at.desc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Publish.created_at.desc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Publishes retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }

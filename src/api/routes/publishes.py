@@ -2,13 +2,15 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.publish_controller as controller
 import schemas.publish
 
 router = APIRouter()
 
 
-@router.get("/publishes", response_model=list[schemas.publish.PublishOut])
+@router.get("/publishes", response_model=PaginatedResponse[schemas.publish.PublishOut])
 def get_publishes(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,
@@ -25,7 +27,7 @@ def get_publishes(
     return controller.list_publishes(db, uid, project_uid, version_uid, type, representation, path, limit, offset, include_deleted)
 
 
-@router.post("/publishes", response_model=schemas.publish.PublishOut, status_code=201)
+@router.post("/publishes", response_model=ApiResponse[schemas.publish.PublishOut], status_code=201)
 def post_publish(
         data: schemas.publish.PublishCreate,
         db: Session = Depends(get_db)
@@ -34,7 +36,7 @@ def post_publish(
     return controller.create_publish(db, data)
 
 
-@router.patch("/publishes/{uid}", response_model=schemas.publish.PublishOut)
+@router.patch("/publishes/{uid}", response_model=ApiResponse[schemas.publish.PublishOut])
 def patch_publish(
         uid: str,
         data: schemas.publish.PublishUpdate,

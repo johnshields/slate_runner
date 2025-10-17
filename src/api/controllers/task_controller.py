@@ -1,12 +1,13 @@
 ﻿from fastapi import HTTPException
 from psycopg2 import IntegrityError
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.version import Version
 from models.task import Task
 from models.project import Project
 from typing import Optional
 from schemas.task import TaskOut, TaskCreate, TaskUpdate
+from schemas.response import create_response
 from utils.database import db_lookup
 from utils.uid import generate_uid
 from utils.datetime_helpers import now_utc
@@ -58,7 +59,7 @@ def create_task(db: Session, data: TaskCreate, *, created_by: str | None = None)
     # Commit task and version atomically
     db.commit()
     db.refresh(new_task)
-    return new_task
+    return create_response(new_task, "Task created successfully")
 
 
 # Create version for task with default status and version number
@@ -79,7 +80,7 @@ def create_task_version(
         created_by=created_by,
     )
     db.add(ver)
-    return ver
+    return create_response(ver, "Task version created successfully")
 
 
 # Update a task by UID
@@ -112,7 +113,7 @@ def update_task(db: Session, uid: str, data: TaskUpdate) -> TaskOut:
 
     db.commit()
     db.refresh(task)
-    return task
+    return create_response(task, "Task updated successfully")
 
 
 # Delete a task by UID (soft delete)
@@ -123,7 +124,7 @@ def delete_task(db: Session, uid: str) -> dict:
     task.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Task '{uid}' deleted successfully"}
+    return create_response(None, f"Task '{uid}' deleted successfully")
 
 
 # Get a list of all tasks, with optional filtering (excluding soft-deleted)
@@ -139,47 +140,74 @@ def list_tasks(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(Task)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(Task)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(Task.deleted_at.is_(None))
+        base_stmt = base_stmt.where(Task.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(Task.uid == uid)
+        base_stmt = base_stmt.where(Task.uid == uid)
 
     if project_uid:
-        stmt = stmt.where(Task.project_uid == project_uid)
+        base_stmt = base_stmt.where(Task.project_uid == project_uid)
 
     if parent_type:
-        stmt = stmt.where(Task.parent_type == parent_type)
+        base_stmt = base_stmt.where(Task.parent_type == parent_type)
 
     if parent_id:
-        stmt = stmt.where(Task.parent_uid == parent_id)
+        base_stmt = base_stmt.where(Task.parent_uid == parent_id)
 
     if name:
-        stmt = stmt.where(Task.name.ilike(f"%{name}%"))
+        base_stmt = base_stmt.where(Task.name.ilike(f"%{name}%"))
 
     if assignee:
-        stmt = stmt.where(Task.assignee == assignee)
+        base_stmt = base_stmt.where(Task.assignee == assignee)
 
     if status:
-        stmt = stmt.where(Task.status == status)
+        base_stmt = base_stmt.where(Task.status == status)
 
-    stmt = stmt.order_by(Task.created_at.desc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Task.created_at.desc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Tasks retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }
 
 
 def list_task_versions(
         db: Session,
         task_uid: str,
+        limit: int = 50,
+        offset: int = 0,
 ):
     db_lookup(db, Task, task_uid)
 
-    stmt = (
-        select(Version)
-        .where(Version.task_uid == task_uid)
-        .order_by(Version.vnum.desc(), Version.created_at.desc())
-    )
-    return db.execute(stmt).scalars().all()
+    base_stmt = select(Version).where(Version.task_uid == task_uid)
+
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Version.vnum.desc(), Version.created_at.desc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Task versions retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }

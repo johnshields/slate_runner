@@ -1,12 +1,13 @@
 ﻿from typing import Optional
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.task import Task
 from models.asset import Asset
 from models.project import Project
 from schemas.task import TaskOut
 from schemas.asset import AssetOut, AssetCreate, AssetUpdate
+from schemas.response import create_response
 from utils.database import db_lookup
 from utils.uid import generate_uid
 from utils.datetime_helpers import now_utc
@@ -38,7 +39,7 @@ def create_asset(db: Session, data: AssetCreate) -> AssetOut:
     db.commit()
     db.refresh(new_asset)
 
-    return new_asset
+    return create_response(new_asset, "Asset created successfully")
 
 
 # Update an asset by UID or name
@@ -62,7 +63,7 @@ def update_asset(db: Session, identifier: str, data: AssetUpdate) -> AssetOut:
 
     db.commit()
     db.refresh(asset)
-    return asset
+    return create_response(asset, "Asset updated successfully")
 
 
 # Delete an asset by UID or name (soft delete)
@@ -73,7 +74,7 @@ def delete_asset(db: Session, identifier: str) -> dict:
     asset.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Asset '{identifier}' deleted successfully"}
+    return create_response(None, f"Asset '{identifier}' deleted successfully")
 
 
 # Get a list of all assets, with optional filtering (excluding soft-deleted)
@@ -86,35 +87,63 @@ def list_assets(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(Asset)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(Asset)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(Asset.deleted_at.is_(None))
+        base_stmt = base_stmt.where(Asset.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(Asset.uid == uid)
+        base_stmt = base_stmt.where(Asset.uid == uid)
 
     if project_uid:
-        stmt = stmt.where(Asset.project_uid == project_uid)
+        base_stmt = base_stmt.where(Asset.project_uid == project_uid)
 
     if name:
-        stmt = stmt.where(Asset.name.ilike(f"%{name}%"))
+        base_stmt = base_stmt.where(Asset.name.ilike(f"%{name}%"))
 
     if type:
-        stmt = stmt.where(Asset.type == type)
+        base_stmt = base_stmt.where(Asset.type == type)
 
-    stmt = stmt.order_by(Asset.name.asc()).limit(limit).offset(offset)
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Asset.name.asc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Assets retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }
 
 
 # Get all tasks belonging to an asset
-def list_asset_tasks(db: Session, asset_uid: str) -> list[TaskOut]:
+def list_asset_tasks(db: Session, asset_uid: str, limit: int = 50, offset: int = 0):
     db_lookup(db, Asset, asset_uid)
 
-    stmt = select(Task).where(
+    base_stmt = select(Task).where(
         Task.parent_type == "asset", Task.parent_uid == asset_uid
-    ).order_by(Task.name.asc())
+    )
 
-    return db.execute(stmt).scalars().all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Task.name.asc()).limit(limit).offset(offset)
+    data = db.execute(stmt).scalars().all()
+    
+    return {
+        "status": "success",
+        "message": "Asset tasks retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }

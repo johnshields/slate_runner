@@ -2,13 +2,15 @@
 from sqlalchemy.orm import Session
 from typing import Optional
 from db.db import get_db
+from schemas.pagination import PaginatedResponse
+from schemas.response import ApiResponse
 import api.controllers.version_controller as controller
 import schemas.version
 
 router = APIRouter()
 
 
-@router.post("/versions", response_model=schemas.version.VersionOut, status_code=201)
+@router.post("/versions", response_model=ApiResponse[schemas.version.VersionOut], status_code=201)
 def post_version(
         data: schemas.version.VersionCreate,
         db: Session = Depends(get_db),
@@ -18,7 +20,7 @@ def post_version(
     return controller.create_version(db, data, publish=publish)
 
 
-@router.patch("/versions/{uid}", response_model=schemas.version.VersionOut)
+@router.patch("/versions/{uid}", response_model=ApiResponse[schemas.version.VersionOut])
 def patch_version(
         uid: str,
         data: schemas.version.VersionUpdate,
@@ -37,7 +39,7 @@ def delete_version(
     return controller.delete_version(db, uid)
 
 
-@router.get("/versions", response_model=list[schemas.version.VersionOut])
+@router.get("/versions", response_model=PaginatedResponse[schemas.version.VersionOut])
 def get_versions(
         uid: Optional[str] = None,
         project_uid: Optional[str] = None,

@@ -8,6 +8,7 @@ from models.version import Version
 from models.task import Task
 from models.project import Project
 from schemas.version import VersionOut, VersionCreate, VersionUpdate
+from schemas.response import create_response
 from utils.database import db_lookup
 from utils.uid import generate_uid
 from utils.datetime_helpers import now_utc
@@ -60,7 +61,7 @@ def create_version(
 
     db.commit()
     db.refresh(version)
-    return version
+    return create_response(version, "Version created successfully")
 
 
 # Update a version by UID
@@ -91,7 +92,7 @@ def update_version(db: Session, uid: str, data: VersionUpdate) -> VersionOut:
 
     db.commit()
     db.refresh(version)
-    return version
+    return create_response(version, "Version updated successfully")
 
 
 def delete_version(db: Session, uid: str) -> dict:
@@ -101,7 +102,7 @@ def delete_version(db: Session, uid: str) -> dict:
     version.deleted_at = now_utc()
     
     db.commit()
-    return {"detail": f"Version '{uid}' deleted successfully"}
+    return create_response(None, f"Version '{uid}' deleted successfully")
 
 
 # Get a list of all versions, with optional filtering (excluding soft-deleted)
@@ -116,25 +117,39 @@ def list_versions(
         limit: int = 100,
         offset: int = 0,
         include_deleted: bool = False,
-):
-    stmt = select(Version)
+) -> dict:
+    # Build base query with filters
+    base_stmt = select(Version)
     
     # Exclude soft-deleted records by default
     if not include_deleted:
-        stmt = stmt.where(Version.deleted_at.is_(None))
+        base_stmt = base_stmt.where(Version.deleted_at.is_(None))
 
     if uid:
-        stmt = stmt.where(Version.uid == uid)
+        base_stmt = base_stmt.where(Version.uid == uid)
     if project_uid:
-        stmt = stmt.where(Version.project_uid == project_uid)
+        base_stmt = base_stmt.where(Version.project_uid == project_uid)
     if task_uid:
-        stmt = stmt.where(Version.task_uid == task_uid)
+        base_stmt = base_stmt.where(Version.task_uid == task_uid)
     if vnum is not None:
-        stmt = stmt.where(Version.vnum == vnum)
+        base_stmt = base_stmt.where(Version.vnum == vnum)
     if status:
-        stmt = stmt.where(Version.status == status)
+        base_stmt = base_stmt.where(Version.status == status)
     if created_by:
-        stmt = stmt.where(Version.created_by == created_by)
+        base_stmt = base_stmt.where(Version.created_by == created_by)
 
-    stmt = stmt.order_by(Version.created_at.desc()).limit(limit).offset(offset)
-    return db.scalars(stmt).all()
+    # Get total count
+    count = db.scalar(select(func.count()).select_from(base_stmt.subquery()))
+    
+    # Get paginated items
+    stmt = base_stmt.order_by(Version.created_at.desc()).limit(limit).offset(offset)
+    data = db.scalars(stmt).all()
+    
+    return {
+        "status": "success",
+        "message": "Versions retrieved successfully",
+        "data": data,
+        "count": count,
+        "limit": limit,
+        "offset": offset
+    }
